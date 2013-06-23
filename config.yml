@@ -1,0 +1,24 @@
+Plugin:
+  current-version: '1.5.4'
+  language: english
+  off-permisions: false
+  disable-all-banks: false
+BankLoan:
+  enable-bank: true
+  maxloanuser: 1000
+  timetax: 60
+  taxesporcent: 10
+BankEsmerald:
+  enable-bank: true
+  esmerald-price: 10
+BankMoney:
+  enable-bank: true
+  max-money-save: 0
+  interest-disbursted-system: false
+BankXP:
+  enable-bank: true
+  max-xp-levels-save: 0
+BankTime:
+  enable-bank: true
+update:
+  enable: true

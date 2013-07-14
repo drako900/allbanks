@@ -1,3 +1,3 @@
-version: 1.6
-http://dev.bukkit.org/bukkit-plugins/all-banks/files/11-a
-force: false
+version: 1.6.1
+http://dev.bukkit.org/bukkit-plugins/all-banks/files/12-a/
+force: true

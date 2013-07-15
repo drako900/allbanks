@@ -1,5 +1,5 @@
    #######################################################################
-   ## LENGUAJE ESPAÑOL V1.5  - ALLBANKS									##
+   ## LENGUAJE ESPAÑOL V1.5   - ALLBANKS									##
    ## TRADUCIDO POR: DRAKO9095 (AUTOR DEL PLUGIN)						##
    ## LAS TRADUCCIONES SON 99% CORRECTAS								##
    ## ¿DUDAS? ¿ERROR DE TRADUCCION? INFORMALO EN LA DEV BUKKIT:			##
@@ -9,11 +9,37 @@
    #######################################################################
 
 languaje:
+   lottery-msg1: "No se han comprado tickets, siguiente sorteo en 3 horas"
+   lottery-msg2: "%player% ha ganado la loteria!"
+   lottery-msg3: "Ganaste la loteria $%money% se han depositado en tu cuenta."
+   lottery-msg4: "No hay tickets comprados..."
+   lottery-msg5: "Ticket ganador: "
+   lottery-msg6: "Jugador ganador: "
+   lottery-msg7: "Loteria forzada a terminar por el staff %player%"
+   lottery-msg8: "No tienes suficiente dinero."
+   lottery-msg9: "Compraste %amount% tickets"
+   lottery-msg10: "No tienes permiso para usar este comando"
+   bank-money-transfer-msg1: "Error! El jugador %player% no existe."
+   bank-money-transfer-msg2: "Bien! Escribe en el chat la cantidad a transferir."
+   bank-money-transfer-msg3: "Se ha transferido $%amount% al jugador %player%"
+   bank-money-transfer-msg4: "Escribe en el chat el nombre del jugador a transferir"
+   bank-money-transfer-msg5: "No tienes $%amount% guardados en el banco."
+   bank-money-transfer-msg6: "El jugador %player% eres tu mismo. Escribe otro nombre."
+   bank-xp-transfer-msg1: "Porfavor, escribe la cantidad de niveles a transferir"
+   bank-xp-transfer-msg2: "Ahora escribe el nombre del jugador a transferir %level% niveles"
+   bank-xp-transfer-msg3-error: "Solo tienes %level% niveles en el banco! Escoge una cantidad menor..."
+   bank-xp-transfer-msg4-error: "El jugador %player% no existe"
+   bank-xp-transfer-msg5: "Se han transferido %level% niveles al jugador %player%"
+   bank-xp-transfer-msg6: "Error! El jugador %player% eres tu mismo."
    ## NUEVAS COSAS EN LA 1.6 (AÑADIDOS 1 TRADUCCIONES) (160 EN TOTAL)
-   broadcast-info-interest-disbursted: "Intereses desembolsados para BankMoney!"
-   bank-xp-max-save-reached: "No puedes guardar esta cantidad de xp. Escoge una cantidad menor. Máximo de xp a guardar: "
-   bank-money-max-save-reached: "No puedes guardar esta cantidad de dinero. Escoge una cantidad menor. Máximo de dinero a guardar: "
-   bank-esmerald-instructions-chat: "Pon en tu inventario la cantidad de esmeraldas a canjear, cuando estes listo escribe: "
+   bank-time-instructions: "Escribe en el chat 'Change' para cambiar tiempo por dinero."
+   bank-time-message-player-deposited-money1: "Depositado $%amount% en tu cuenta"
+   broadcast-info-interest-disbursted: "Intereses desembolsado en BankMoney!"
+   bank-xp-max-save-reached: "No puedes guardar esta cantidad de xp, escribe una cantidad menor. Maximo de xp para poder guardar: "
+   bank-money-max-save-reached: "No puedes guardar esta cantidad de dinero, escribe una cantidad menor. Maximo de dinero para poder guardar: "
+   bank-esmerald-instructions-chat: "Coloca en tu inventario la cantidad de esmeraldas a vender, cuando estes listo escribe en el chat lo siguiente: "
+   cant-use-all-banks-disabled: "No puedes usar este banco. AllBanks deshabilitado en "
+   cant-use-all-banks-disabled2: "config.yml"
    ## NUEVAS COSAS EN LA 1.5.3 (AÑADIDOS 2 TRADUCCIONES) (159 EN TOTAL)
    bankesmerald.info.value.deposit: "Se ha depositado "
    bankesmerald.info.value.deposit2: " en su cuenta."

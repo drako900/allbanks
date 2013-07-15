@@ -1,5 +1,5 @@
    #######################################################################
-   ## LANGUAJE ENGLISH V1.5  - ALLBANKS									##
+   ## LANGUAJE ENGLISH V1.5   - ALLBANKS									##
    ## TRANSLATED BY: DRAKO9095 (PLUGIN AUTHOR)							##
    ## TRANSLATIONS ARE 68% CORRECT										##
    ## QUESTIONS? TRANSLATION ERROR?? REPORT IT							##
@@ -9,7 +9,31 @@
    #######################################################################
 
 languaje:
+   lottery-msg1: "No has been purchased tickets , next draw in 3 hours"
+   lottery-msg2: "%player% has won the lottery!"
+   lottery-msg3: "You won the lottery $%money% has been deposited in your account."
+   lottery-msg4: "No tickets bought..."
+   lottery-msg5: "Ticket winner: "
+   lottery-msg6: "Player winner: "
+   lottery-msg7: "Lottery forced to terminate by the staff %player%"
+   lottery-msg8: "You do not have enough money."
+   lottery-msg9: "Bought %amount% tickets"
+   lottery-msg10: "You do not have permission to use this command"
+   bank-money-transfer-msg1: "Error! The player %player% does not exist!"
+   bank-money-transfer-msg2: "Good! Write in the chat, the amount to be transferred."
+   bank-money-transfer-msg3: "It has transferred $%amount% to player %player%"
+   bank-money-transfer-msg4: "Write in chat the 'player name' to transfer"
+   bank-money-transfer-msg5: "You do not have $%amount% in the bank."
+   bank-money-transfer-msg6: "%player% is yourself. Write another name."
+   bank-xp-transfer-msg1: "Please, enter the amount of levels to transfer"
+   bank-xp-transfer-msg2: "Now write in chat the 'player name' to transfer %level% levels"
+   bank-xp-transfer-msg3-error: "Only have %level% levels in the bank! Choose a smaller amount..."
+   bank-xp-transfer-msg4-error: "The player %player% does not exist"
+   bank-xp-transfer-msg5: "Was transferred %level% levels to player %player%"
+   bank-xp-transfer-msg6: "Error! player% is yourself. Write another name"
    ## NUEVAS COSAS EN LA 1.6
+   bank-time-instructions: "Write in chat 'Change' to change time for money"
+   bank-time-message-player-deposited-money1: "Deposited $%amount% to your account"
    broadcast-info-interest-disbursted: "Interests disbursed for BankMoney!"
    bank-xp-max-save-reached: "You can't save this amount of xp. Choose a smaller amount. Maximum xp to save: "
    bank-money-max-save-reached: "You can't save this amount of money. Choose a smaller amount. Maximum money to save: "

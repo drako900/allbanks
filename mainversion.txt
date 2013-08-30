@@ -1,3 +1,3 @@
 version: 1.6.3
-http://dev.bukkit.org/bukkit-plugins/all-banks/files/16
+----
 force: false

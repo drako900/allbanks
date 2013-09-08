@@ -20,7 +20,7 @@ import com.github.drako900.MainAllBank;
 import com.github.drako900.UpdateSignStateAllBanks;
 
 public class EventOnPlayerChat {
-  
+	
 	MainAllBank plugin;
     public EventOnPlayerChat(MainAllBank MainAllBank) {
     	this.plugin = MainAllBank;
@@ -72,13 +72,23 @@ public class EventOnPlayerChat {
 					//OBTENIENDO TIEMPO ACTUAL
 					int current_time = 0;
 					current_time = pInv.getInt("banktime.time-save");
-					econ.depositPlayer(player.getName(), current_time);
+					
+					//version 1.6.3
+					int get_val_tim = 0;
+					get_val_tim = plugin.getConfig().getInt("BankTime.give-money-per-time");
+					
+					//error #NF-1
+					if(get_val_tim==0){
+						plugin.getLogger().warning("value missing in config.yml: (BankTime.give-money-per-time), skip.");
+					}
+					
+					econ.depositPlayer(player.getName(), (current_time * get_val_tim));
 					
 					pInv.set("banktime.time-save", 0);
 					try {
 						pInv.save(playerdata);
 						plugin.updatesignstate.updateSignStateBankTime(bPlayer.getSign(), 1, player);
-						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.GREEN+plugin.traducir("bank-time-message-player-deposited-money1").replace("%amount%", current_time+""));
+						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-time-message-player-deposited-money1").replace("%amount%", current_time+""));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -114,7 +124,7 @@ public class EventOnPlayerChat {
 						econ.depositPlayer(player.getName(), (esmeraldastot*value_esmerald));
 						
 						plugin.updatesignstate.updateSignStateBankEsmerald(bPlayer.getSign(), 1, player);
-						player.sendMessage(ChatColor.BLUE+"[AllBankss] "+ChatColor.GREEN+plugin.traducir("bankesmerald.info.value.deposit")+econ.format(esmeraldastot*value_esmerald)+plugin.traducir("bankesmerald.info.value.deposit2"));
+						player.sendMessage(ChatColor.BLUE+"[AllBankss] "+plugin.langCF("bankesmerald.info.value.deposit").replace("%ammount%", econ.format(esmeraldastot*value_esmerald)));
 					}else{
 						player.sendMessage("error");
 					}
@@ -130,14 +140,14 @@ public class EventOnPlayerChat {
 	        } catch (NumberFormatException e) {
 	        	cantidad = 0;
 	        	event.setCancelled(true);
-	        	player.sendMessage(plugin.traducir("noisanumber")+"");
+	        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", cantidad+""));
 	        }
 			
 				if(mensaje.matches("([0-9])*")&&mensaje.length()<=7){
 					//Cantidad ingresad
 					
 					if(cantidad >= 1000001){
-						player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("amountexcededborrow"));
+						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("amountexcededborrow"));
 					}else{
 				        
 				        //CARGAMOS LIMITE DE PRESTAMO A PEDIR
@@ -147,13 +157,13 @@ public class EventOnPlayerChat {
 				            String limite = plugin.getConfig().getString("BankLoan.maxloanuser");
 				            int limite2=Integer.parseInt(limite);
 				            if(limite2==0){
-				            	player.sendMessage(ChatColor.RED+plugin.traducir("borrowerrorrefer"));
+				            	player.sendMessage(plugin.langCF("borrowerrorrefer"));
 				            }else{
 				            	int calculos = (limite2-loanactual-cantidad);
 				            	if(calculos<0){
-				            		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+plugin.traducir("maxloansobrepased"));
+				            		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("maxloansobrepased"));
 				            	}else{
-				            		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+plugin.traducir("aprobateloan")+econ.format(cantidad));
+				            		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("aprobateloan").replace("%ammount%",econ.format(cantidad)+""));
 				            		
 				            		pInv.set("user.loan", (loanactual+cantidad));
 				            		
@@ -169,17 +179,17 @@ public class EventOnPlayerChat {
 				            		plugin.updatesignstate.updateSignStateBankLoan(bPlayer.getSign(), 1, player);
 				            		//Depositamos al usuario
 				            		econ.depositPlayer(player.getName(), cantidad);
-				            		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.GREEN+plugin.traducir("addaccountm1")+econ.format(cantidad)+plugin.traducir("addaccountm2"));
+				            		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("addaccountm1").replace("%ammount%", econ.format(cantidad)));
 				            	}
 				            }
 				        
 				        }else{
-				        	plugin.getLogger().severe(plugin.traducir("notfoundconfig")+config);
-				        	player.sendMessage(ChatColor.RED+plugin.traducir("liquidateerror"));
+				        	plugin.getLogger().severe(plugin.langCF("notfoundconfig").replace("%value%", config+""));
+				        	player.sendMessage(plugin.langCF("liquidateerror"));
 				        }
 					}
 				}else{
-					player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("onlynumbers"));
+					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("onlynumbers"));
 				}
 			break;
 		case 2:
@@ -197,7 +207,7 @@ public class EventOnPlayerChat {
 				resta = (loanactual-cantidad);
 				
 			if(resta<0){
-				player.sendMessage(ChatColor.RED+plugin.traducir("liquidateexcededmin"));
+				player.sendMessage(plugin.langCF("liquidateexcededmin"));
 				return;
 			}
 			
@@ -208,7 +218,7 @@ public class EventOnPlayerChat {
 						pInv.save(playerdata);
 						//Actualizamos el mensaje
 						plugin.updatesignstate.updateSignStateBankLoan(bPlayer.getSign(), 2, player);
-						player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.GREEN+plugin.traducir("removeloan1")+ChatColor.WHITE+econ.format(cantidad)+ChatColor.GREEN+plugin.traducir("removeloan2"));
+						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("removeloan1").replace("%ammount%",econ.format(cantidad)));
 						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -221,23 +231,23 @@ public class EventOnPlayerChat {
 						econ.withdrawPlayer(player.getName(), cantidad);
 						try {
 							pInv.save(playerdata);
-					        player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.GREEN+plugin.traducir("accountliquidate"));
+					        player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("accountliquidate"));
 					        plugin.updatesignstate.updateSignStateBankLoan(bPlayer.getSign(), 2, player);
 						}catch (IOException e){
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 				}else if(resta==0 && loanactual==0 || econ.has(player.getName(), cantidad)){
-					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("erronostatloan"));
+					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("erronostatloan"));
 				}else{
 					
-					player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("nomoneyliquidate"));
+					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("nomoneyliquidate"));
 
 				}
 				
 		    	
 			}else{
-				player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("onlynumbersminus1000000"));
+				player.sendMessage(ChatColor.BLUE+"[AllBanks]"+plugin.langCF("onlynumbers"));
 			}
 			break;
 		}
@@ -247,20 +257,27 @@ public class EventOnPlayerChat {
 				case 1:
 					//DEPOSITAR LVL DE XP
 					//EVITAMOS QUE USE CARACTERES QUE NO SEAN NUMEROS
+					
 					try{
 			        	cantidad = Integer.parseInt(mensaje);
 			        } catch (NumberFormatException e) {
 			        	cantidad = 0;
 			        	event.setCancelled(true);
-			        	player.sendMessage(plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 			        	return;
 			        }
 					
+					if(cantidad<1){
+			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
+			        	return;
+					}
+					
 					int xpplayer = player.getLevel();
-					int xpplayer_save = SPlayer.getInt("bankxp.xp-save");
+					int xpplayer_save3 = SPlayer.getInt("bankxp.xp-save-exp");
+					
 					
 					if(cantidad>xpplayer){
-						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("bankxp-chat-no-xp"));
+						player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bankxp-chat-no-xp"));
 						return;
 					}
 					
@@ -268,21 +285,41 @@ public class EventOnPlayerChat {
 					
 					int max_xp_save_config = plugin.getConfig().getInt("BankXP.max-xp-levels-save");
 					
-					if((xpplayer_save+cantidad) > max_xp_save_config){
+					if((xpplayer_save3+plugin.convertLevelToExp(cantidad)) >= plugin.convertLevelToExp(max_xp_save_config)){
 						if(max_xp_save_config == 0){}else{
-							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("bank-xp-max-save-reached")+" "+ChatColor.YELLOW+econ.format(max_xp_save_config)+" level(s)");
+							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-xp-max-save-reached").replace("%level%", max_xp_save_config+""));
+							player.sendMessage("MAX:"+plugin.convertLevelToExp(max_xp_save_config));
+							player.sendMessage("CALC: "+(xpplayer_save3+plugin.convertLevelToExp(cantidad)));
 							return;
 						}
 					}
 					
-					player.setLevel(xpplayer-cantidad);
-					SPlayer.set("bankxp.xp-save", xpplayer_save+cantidad);
+					//Nuevo fix para la barra de EXPERIENCIA y calculos para el banco de xp, agregado en la 1.6.5
+					int xp = ((int)plugin.getCurrentExp(player) - (int) plugin.getXpForLevel(cantidad));
+					
+			        if (xp < 0) {
+			            xp = 0;
+			        }
+					
+					int newLvl = plugin.getLevelForExp(xp);
+					float cexp = ((float) (xp - plugin.getXpForLevel(newLvl)) / (float) MainAllBank.xpRequiredForNextLevel[newLvl]);
+					player.setExp(cexp);
+					
+			        int curLvl = player.getLevel();
+			        if (curLvl != newLvl) {
+			            player.setLevel(newLvl);
+			        }
+			        //fin del fix
+			        
+					//int calc_xp = player.getLevel();
+					//player.setLevel(calc_xp-cantidad);
+					SPlayer.set("bankxp.xp-save-exp", plugin.convertLevelToExp(cantidad)+xpplayer_save3);
 					
 				try {
 					SPlayer.save(SPlayerd);
 					//XLANG REQUIRED
 					plugin.updatesignstate.updateSignStateBankXP(bPlayer.getSign(), 1, player);
-					player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.GREEN+plugin.traducir("bankxp-chat-save-succesfull-1")+cantidad+plugin.traducir("bankxp-chat-save-succesfull-2"));
+					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bankxp-chat-save-succesfull-1").replace("%level%", cantidad+""));
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -295,27 +332,63 @@ public class EventOnPlayerChat {
 					try{
 			        	cantidad = Integer.parseInt(mensaje);
 			        	
-						int xpplayer_save2 = SPlayer.getInt("bankxp.xp-save");
+			        	if(cantidad <0){
+			        		player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
+			        		return;
+			        	}
+			        	
+						int xpplayer_save2 = SPlayer.getInt("bankxp.xp-save-exp");
+						int levelss = plugin.getLevelForExp(xpplayer_save2);
 						
-						if(xpplayer_save2<cantidad){
-							player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("bankxp-error-withdraw-no-xp-inbank"));
+						if(levelss==0){
+							
+						}else{
+							levelss = levelss + 1;
+						}
+						
+						if((plugin.getLevelForExp(xpplayer_save2)+1)<cantidad){
+							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bankxp-error-withdraw-no-xp-inbank"));
+							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+levelss+" levels currently saved in the bank.");
 							return;
 						}
 						
 						//Todo BIEN ENTONCES SEGUIMOS CON EL PRROCESO
 						
-						SPlayer.set("bankxp.xp-save", xpplayer_save2 - cantidad);
+						//fix secundario 1.6.5 cantidad negativa
+						if(xpplayer_save2 - plugin.convertLevelToExp(cantidad)<0){
+							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bankxp-error-withdraw-no-xp-inbank"));
+							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+levelss+" levels currently saved in the bank.");
+							return;
+						}
+						
+						SPlayer.set("bankxp.xp-save-exp", xpplayer_save2 - plugin.convertLevelToExp(cantidad));
 						
 						
 						try {
 							SPlayer.save(SPlayerd);
 							
-							int actualxp = player.getLevel();
+							//Nuevo fix para la barra de EXPERIENCIA y calculos del banco de XP, agregado en la 1.6.5
+							int xp2 = ((int)plugin.getCurrentExp(player) + (int) plugin.getXpForLevel(cantidad));
 							
-							player.setLevel(cantidad + actualxp);
+					        if (xp2 < 0) {
+					            xp = 0;
+					        }
+							
+							int newLvl2 = plugin.getLevelForExp(xp2);
+							float cexp2 = ((float) (xp2 - plugin.getXpForLevel(newLvl2)) / (float) MainAllBank.xpRequiredForNextLevel[newLvl2]);
+							player.setExp(cexp2);
+							
+					        int curLvl2 = player.getLevel();
+					        if (curLvl2 != newLvl2) {
+					            player.setLevel(newLvl2);
+					        }
+					        //fin del fix
+							
+							//int actualxp = player.getLevel();
+							//player.setLevel(actualxp+cantidad);
 							
 							plugin.updatesignstate.updateSignStateBankXP(bPlayer.getSign(), 2, player);
-							player.sendMessage(ChatColor.GREEN+plugin.traducir("bankxp-withdraw-succesfull"));
+							player.sendMessage(plugin.langCF("bankxp-withdraw-succesfull"));
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -325,7 +398,7 @@ public class EventOnPlayerChat {
 			        } catch (NumberFormatException e) {
 			        	cantidad = 0;
 			        	event.setCancelled(true);
-			        	player.sendMessage(plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 			        	return;
 			        }
 				break;
@@ -338,13 +411,19 @@ public class EventOnPlayerChat {
 						try{
 							cantidad = Integer.parseInt(mensaje);
 							
+							if(cantidad<0){
+								player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
+								return;
+							}
+							
 							//COMPROBAMOS SI EN REALIDAD PUEDE TRANSFERIR ESA CANTIDAD...
 			    			File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 			    			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 			    			
-			    			int current_xp_save = FPlayer.getInt("bankxp.xp-save");
-			    			if(current_xp_save < cantidad){
-			    				player.sendMessage(ChatColor.RED+plugin.traducir("bank-xp-transfer-msg3-error").replace("%level%", current_xp_save+""));
+			    			int current_xp_save = FPlayer.getInt("bankxp.xp-save-exp");
+			    			
+			    			if((plugin.getLevelForExp(current_xp_save)+1) < cantidad){
+			    				player.sendMessage(plugin.langCF("bank-xp-transfer-msg3-error").replace("%level%", (plugin.getLevelForExp(current_xp_save)+1)+""));
 			    				return;
 			    			}
 							
@@ -354,14 +433,14 @@ public class EventOnPlayerChat {
 							bPlayer.setAmountT(cantidad);
 							
 							//traduction replace
-							String frase_1 = plugin.traducir("bank-xp-transfer-msg2");
+							String frase_1 = plugin.langCF("bank-xp-transfer-msg2");
 							frase_1 = frase_1.replace("%level%", cantidad+"");
 							
-							player.sendMessage(ChatColor.DARK_AQUA+frase_1);
+							player.sendMessage(frase_1);
 						} catch (NumberFormatException e) {
 							cantidad = 0;
 							event.setCancelled(true);
-							player.sendMessage(plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+							player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 							return;
 						}
 					break;
@@ -370,13 +449,13 @@ public class EventOnPlayerChat {
 						//COMPROBAMOS SI EL JUGADOR EXISTE
 						Player check_player = this.plugin.getServer().getPlayerExact(mensaje);
 						if(check_player == null){
-							player.sendMessage(plugin.traducir("bank-xp-transfer-msg4-error").replace("%player%", mensaje));
+							player.sendMessage(plugin.langCF("bank-xp-transfer-msg4-error").replace("%player%", mensaje));
 							return;
 						}
 						
 						//COMPROBAMOS SI EL JUGADOR OBJETIVO NO ES EL MISMO
 						if(mensaje.equalsIgnoreCase(player.getName())){
-							player.sendMessage(plugin.traducir("bank-xp-transfer-msg6").replace("%player%", mensaje));
+							player.sendMessage(plugin.langCF("bank-xp-transfer-msg6").replace("%player%", mensaje).replace("player%", mensaje));
 							return;
 						}
 						
@@ -388,23 +467,23 @@ public class EventOnPlayerChat {
 						File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 		    			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 		    			
-		    			int current_xp_p_s = FPlayer.getInt("bankxp.xp-save");
-		    			int sobra = current_xp_p_s - amount_t;
+		    			int current_xp_p_s = FPlayer.getInt("bankxp.xp-save-exp");
+		    			int sobra = current_xp_p_s - plugin.convertLevelToExp(amount_t);
 		    			
-		    			FPlayer.set("bankxp.xp-save", sobra);
+		    			FPlayer.set("bankxp.xp-save-exp", sobra);
 		    			
 		    			//agregamos todo al jugador objetivo
 						File fileplayerT = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+mensaje+".yml");
 		    			YamlConfiguration FPlayerT = YamlConfiguration.loadConfiguration(fileplayerT);
 		    			
-		    			int current_xp_p_t = FPlayerT.getInt("bankxp.xp-save");
-		    			int total = current_xp_p_t + amount_t;
-		    			FPlayerT.set("bankxp.xp-save", total);
+		    			int current_xp_p_t = FPlayerT.getInt("bankxp.xp-save-exp");
+		    			int total = current_xp_p_t + plugin.convertLevelToExp(amount_t);
+		    			FPlayerT.set("bankxp.xp-save-exp", total);
 		    			
 		    			try {
 							FPlayer.save(fileplayer);
 							FPlayerT.save(fileplayerT);
-							player.sendMessage(ChatColor.GOLD+plugin.traducir("bank-xp-transfer-msg5").replace("%level%", amount_t+"").replace("%player%", mensaje));
+							player.sendMessage(plugin.langCF("bank-xp-transfer-msg5").replace("%level%", amount_t+"").replace("%player%", mensaje));
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -437,7 +516,7 @@ public class EventOnPlayerChat {
 			    			if(money_save_total > money_max_save_config){
 			    				//MAXIMO DE DINERO A GUARDAR ALCANZADO
 			    				if(money_max_save_config==0){}else{
-			    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("bank-money-max-save-reached")+ChatColor.YELLOW+" "+econ.format(money_max_save_config));
+			    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-money-max-save-reached").replace("%ammount%", econ.format(money_max_save_config)));
 			    				return;
 			    				}
 			    			}
@@ -447,7 +526,7 @@ public class EventOnPlayerChat {
 			    			try {
 								FPlayer.save(fileplayer);
 								econ.withdrawPlayer(player.getName(), cantidad);
-								player.sendMessage(ChatColor.GREEN + plugin.traducir("bankmoney-save-succesfull-1") +econ.format(cantidad)+plugin.traducir("bankmoney-save-succesfull-2"));
+								player.sendMessage(plugin.langCF("bankmoney-save-succesfull-1").replace("%ammount%", econ.format(cantidad)));
 								
 								plugin.updatesignstate.updateSignStateBankMoney(bPlayer.getSign(), 1, player);
 								
@@ -457,12 +536,12 @@ public class EventOnPlayerChat {
 							}
 			    			
 			        	}else{
-			        		player.sendMessage(ChatColor.RED+plugin.traducir("bankmoney-error-no-money"));
+			        		player.sendMessage(plugin.langCF("bankmoney-error-no-money"));
 			        	}
 			        } catch (NumberFormatException e) {
 			        	cantidad = 0;
 			        	event.setCancelled(true);
-			        	player.sendMessage(plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 			        	return;
 			        }
 				break;
@@ -472,7 +551,7 @@ public class EventOnPlayerChat {
 			        } catch (NumberFormatException e) {
 			        	cantidad = 0;
 			        	event.setCancelled(true);
-			        	player.sendMessage(plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 			        	return;
 			        }
 					
@@ -481,7 +560,7 @@ public class EventOnPlayerChat {
 	    			
 	    			int moneyact = FPlayer.getInt("bankmoney.save-money");
 	    			if(cantidad>moneyact){
-	    				player.sendMessage(ChatColor.RED+plugin.traducir("bankmoney-error-withdraw-no-moneysave-1")+econ.format(cantidad)+plugin.traducir("bankmoney-error-withdraw-no-moneysave-2"));
+	    				player.sendMessage(plugin.langCF("bankmoney-error-withdraw-no-moneysave-1").replace("%ammount%", econ.format(cantidad)));
 	    			}else{
 	    				FPlayer.set("bankmoney.save-money", moneyact-cantidad);
 	    				
@@ -507,12 +586,12 @@ public class EventOnPlayerChat {
 								
 								if(player_target == null){
 									//The player no exist
-									player.sendMessage(ChatColor.RED+plugin.traducir("bank-money-transfer-msg1").replace("%player%", mensaje));
+									player.sendMessage(plugin.langCF("bank-money-transfer-msg1").replace("%player%", mensaje));
 									return;
 								}else{
 									
 					    			if(mensaje.equals(player.getName())){
-					    				player.sendMessage(ChatColor.RED+plugin.traducir("bank-money-transfer-msg6").replace("%player%", mensaje+""));
+					    				player.sendMessage(plugin.langCF("bank-money-transfer-msg6").replace("%player%", mensaje+""));
 					    				
 					    				return;
 					    			}
@@ -520,7 +599,7 @@ public class EventOnPlayerChat {
 									//Player exist...
 									bPlayer.setStatusT(2);
 									bPlayer.setPlayerTargetT(mensaje);
-									player.sendMessage(plugin.traducir("bank-money-transfer-msg2"));
+									player.sendMessage(plugin.langCF("bank-money-transfer-msg2"));
 								}
 							break;
 						
@@ -539,7 +618,7 @@ public class EventOnPlayerChat {
 				    			int total_s = current_money - cantidad;
 				    			
 				    			if(current_money < cantidad){
-				    				player.sendMessage(ChatColor.RED+plugin.traducir("bank-money-transfer-msg5").replace("%amount%", cantidad+""));
+				    				player.sendMessage(plugin.langCF("bank-money-transfer-msg5").replace("%amount%", cantidad+""));
 				    				return;
 				    			}
 				    		
@@ -553,7 +632,7 @@ public class EventOnPlayerChat {
 				    			try {
 									player_d_s.save(player_d_s_f);
 									player_d_t.save(player_d_t_f);
-									player.sendMessage(ChatColor.GREEN+plugin.traducir("bank-money-transfer-msg3").replace("%amount%", cantidad+"").replace("%player%", bPlayer.getPlayerTargetT()));
+									player.sendMessage(plugin.langCF("bank-money-transfer-msg3").replace("%amount%", cantidad+"").replace("%player%", bPlayer.getPlayerTargetT()));
 									bPlayer.setState(1);
 									plugin.closeBankForPlayer(bPlayer);
 								} catch (IOException e) {
@@ -564,7 +643,7 @@ public class EventOnPlayerChat {
 					        } catch (NumberFormatException e) {
 					        	cantidad = 0;
 					        	event.setCancelled(true);
-					        	player.sendMessage(ChatColor.RED+plugin.traducir("noisanumber")+mensaje+plugin.traducir("noisanumber1"));
+					        	player.sendMessage(ChatColor.RED+plugin.langCF("noisanumber").replace("%value%", mensaje));
 					        	return;
 					        }
 							break;
@@ -573,7 +652,7 @@ public class EventOnPlayerChat {
 			}
 		}else{
 			//XLANG REQUIRED
-			player.sendMessage(ChatColor.RED+plugin.traducir("AllBanks-error-sign-error-unknowreason"));
+			player.sendMessage(plugin.langCF("AllBanks-error-sign-error-unknowreason"));
 		}
    }
 }

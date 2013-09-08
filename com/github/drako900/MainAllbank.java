@@ -4,6 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 //import net.milkbowl.vault.economy.EconomyResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.sql.Connection;
@@ -46,9 +47,10 @@ import com.allbanks.events.EventOnPlayerInteract;
 import com.allbanks.events.EventOnPlayerJoined;
 import com.allbanks.events.EventOnPlayerQuit;
 import com.allbanks.events.EventOnSignChange;
+import com.allbanks.metrics.Metrics;
  
 public final class MainAllBank extends JavaPlugin implements Listener, CommandExecutor {
-  
+	
 	static MainAllBank p;
 	public static Economy econ = null;
 	private CheckUpdate updatechecker;
@@ -68,6 +70,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 	public HashMap<BankPlayer, Sign> bankUsers = new HashMap<BankPlayer, Sign>();
 	HashMap<Player, Sign> chestopen = new HashMap<Player, Sign>();
 	public HashMap<String, Location> moveCheck = new HashMap<String, Location>();
+	public HashMap<MainLeaderboard, String> leaderboard = new HashMap<MainLeaderboard, String>();
 	
 	//JDBC
 	String user = "allbanks";
@@ -88,7 +91,9 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		conn.close(); //Closes the connection
 	}
 	
-    public String traducir(String id) {
+
+    public String langCF(String id) {
+    	
         String _lang = getConfig().getString("Plugin.language");
         File languagef = new File(this.getDataFolder() + File.separator + _lang + ".yml");
         if (!languagef.exists()) {
@@ -107,12 +112,39 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
         
         String out = language2.getString("languaje."+id);
         if (out != null) {
+        	out = this.parseFormatChat(out);
             return out;
         } else {
             return "(Missing Translation: " + id +") ";
         }
     }
-   
+    
+    public String parseFormatChat(String txt0){
+    	txt0 = txt0.replaceAll("&1", ChatColor.DARK_BLUE+"");
+    	txt0 = txt0.replaceAll("&2", ChatColor.DARK_GREEN+"");
+    	txt0 = txt0.replaceAll("&3", ChatColor.DARK_AQUA+"");
+    	txt0 = txt0.replaceAll("&4", ChatColor.DARK_RED+"");
+    	txt0 = txt0.replaceAll("&5", ChatColor.DARK_PURPLE+"");
+    	txt0 = txt0.replaceAll("&6", ChatColor.GOLD+"");
+    	txt0 = txt0.replaceAll("&7", ChatColor.GRAY+"");
+    	txt0 = txt0.replaceAll("&8", ChatColor.DARK_GRAY+"");
+    	txt0 = txt0.replaceAll("&9", ChatColor.BLUE+"");
+    	txt0 = txt0.replaceAll("&0", ChatColor.BLACK+"");
+    	txt0 = txt0.replaceAll("&a", ChatColor.GREEN+"");
+    	txt0 = txt0.replaceAll("&b", ChatColor.AQUA+"");
+    	txt0 = txt0.replaceAll("&c", ChatColor.RED+"");
+    	txt0 = txt0.replaceAll("&d", ChatColor.LIGHT_PURPLE+"");
+    	txt0 = txt0.replaceAll("&e", ChatColor.YELLOW+"");
+    	txt0 = txt0.replaceAll("&f", ChatColor.WHITE+"");
+    	txt0 = txt0.replaceAll("&l", ChatColor.BOLD+"");
+    	txt0 = txt0.replaceAll("&n", ChatColor.UNDERLINE+"");
+    	txt0 = txt0.replaceAll("&o", ChatColor.ITALIC+"");
+    	txt0 = txt0.replaceAll("&k", ChatColor.MAGIC+"");
+    	txt0 = txt0.replaceAll("&m", ChatColor.STRIKETHROUGH+"");
+    	txt0 = txt0.replaceAll("&r", ChatColor.RESET+"");
+		return txt0;
+    }
+    
     public void interestdisbursedexec(){
     	systemdisbursed = new InterestDisbursedSystem(this);
     	systemdisbursed.disburseinterest();
@@ -121,13 +153,47 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
     
 	@Override
 	public void onEnable(){
+		
+		getLogger().info("AllBanks LOTTERY enabled, next winner in: "+getConfig().getInt("Lottery.get-winner-per-time")+" minutes");
+		
+		//metrics
+		try {
+			if(getConfig().getBoolean("send-metrics.enable")){
+				Metrics metrics = new Metrics(this);
+				metrics.start();
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b----- AllBanks - MCStats - Metrics ----"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&e<- Checking settings"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&e-> MCStats enabled"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b-> MCStats started"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b---------------------------------------"));
+			}else{
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b----- AllBanks - MCStats - Metrics ----"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&e<- Checking settings"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&e-> MCStats Disabled"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b-> MCStats ignored, skip"));
+				Bukkit.getConsoleSender().sendMessage(parseFormatChat("&b---------------------------------------"));
+			}
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+		}
+		
 			//Bank lottery
 		new BukkitRunnable() {
+			
+			
+			
 			public void run() {
+				
 				
 				
 				String path  = getDataFolder() + "/lottery/tickets/";
 	            File folder = new File(path);
+
+	            if(!folder.exists()){
+	            	folder.mkdir();
+	            }
+	            
+	            folder = new File(path);
 	            
 	            String[] fileNames = folder.list();
 				
@@ -136,7 +202,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 				
 				if(max==0){
 				     //broadcast
-				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+ChatColor.RED+traducir("lottery-msg1"));
+				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+langCF("lottery-msg1"));
 					return;
 				}
 				
@@ -150,9 +216,9 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 						String playerg = yamlx.getString("lottery.owner");
 						
 				     //broadcast
-				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+ChatColor.GREEN+traducir("lottery-msg2").replace("%player%", playerg));
+				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+langCF("lottery-msg2").replace("%player%", playerg));
 				     
-				     int lottery_buy_cost = 50;
+				    int lottery_buy_cost = getConfig().getInt("Lottery.buy-cost-per-ticket");
 					int total_won = max * lottery_buy_cost ;
 				     
 				     //deposit money
@@ -171,7 +237,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 				         if (pTo.isOnline()) {
 				             // player exists (online)
 				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_GREEN+traducir("lottery-msg3").replace("%money%", total_won+""));
+				        	 Bukkit.getPlayer(playerg).sendMessage(langCF("lottery-msg3").replace("%money%", total_won+""));
 				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 				         } else {
 				             // player exists (offline)
@@ -186,7 +252,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 							datax.delete();
 						}
 			}
-		}.runTaskTimerAsynchronously(this, 216000, 216000);
+		}.runTaskTimerAsynchronously(this, (1200 * getConfig().getInt("Lottery.get-winner-per-time")), (1200 * getConfig().getInt("Lottery.get-winner-per-time")));
          
         
         
@@ -219,7 +285,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		GenerateLang GenerateLang = new GenerateLang(this);
 		if(GenerateLang.Generatelanguajesyml()){
 		}else{
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+traducir("lngenerateERR"));
+			Bukkit.getConsoleSender().sendMessage(langCF("lngenerateERR"));
 			getServer().getPluginManager().disablePlugin(this);
 		}
         
@@ -228,16 +294,16 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		
 		pm.registerEvents(this, this);
         if (!setupVault() ) {
-        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+traducir("vaultrequired"));
-        	Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+traducir("deshab"));
-        	getServer().broadcastMessage(ChatColor.RED+"[AllBanks] "+traducir("deshabplugviewconsole"));
+        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+langCF("vaultrequired"));
+        	Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+langCF("deshab"));
+        	getServer().broadcastMessage("[AllBanks] "+ langCF("deshabplugviewconsole"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }else if(!setupEconomy()){
-        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+traducir("economypluginrequired"));
-        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+traducir("essentialspexample"));
-        	Bukkit.getConsoleSender().sendMessage(ChatColor.RED+traducir("deshab"));
-        	getServer().broadcastMessage(ChatColor.RED+"[AllBanks] "+traducir("deshabplugviewconsole"));
+        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+langCF("economypluginrequired"));
+        	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] [!] "+langCF("essentialspexample"));
+        	Bukkit.getConsoleSender().sendMessage(langCF("deshab"));
+        	getServer().broadcastMessage(ChatColor.RED+"[AllBanks] "+ langCF("deshabplugviewconsole"));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -256,13 +322,14 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
         File config = new File(getDataFolder() + File.separator + "config.yml");
      
         if (!config.exists()) {
-            this.getLogger().info(traducir("generatingconfigyml"));
+            this.getLogger().info(langCF("generatingconfigyml"));
             saveResource("config.yml", false);
             this.getConfig().options().copyDefaults(true);
             this.saveConfig();
         }
         //Adios comando
 		getCommand("allbanks").setExecutor(new CommandsAllBanks(this));
+		getCommand("lottery").setExecutor(new CommandsAllBanks(this));
 		
         String _lang = getConfig().getString("Plugin.language");
         
@@ -274,20 +341,11 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
         	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+"[AllBanks] Enabled");
         }
 		//REPETIR FUNCION CADA CIERTO TIEMPO
-		final int minutoscobrar = getConfig().getInt("BankLoan.timetax");
-		boolean errorm = false;
+		int minutoscobrar = getConfig().getInt("BankLoan.timetax");
 		if(minutoscobrar==0){
-			errorm = true;
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+traducir("time-nofound-timetax"));
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+traducir("time-nofound-timetax2"));
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+traducir("time-nofound-timetax3"));
-			//getConfig().set("BankLoan.timetax", 60);
-			
-			getServer().getPluginManager().disablePlugin(this);
+			minutoscobrar = 60;
 		}
   		
-  		//END PREFIX
-		if(errorm == false){
 			
 			
 			
@@ -314,13 +372,103 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 						checar_act();
 					}
 				}.runTaskTimerAsynchronously(this, 0, 432000);
-		}
 		
 	}
 	
 	public void checar_act(){
 		updatechecker = new CheckUpdate(this);
 		updatechecker.startUpdateCheck();
+	}
+	
+    public static int xpRequiredForNextLevel[];
+    public static int xpTotalToReachLevel[];
+    public static int hardMaxLevel = 100000;
+    
+    static {
+        // 25 is an arbitrary value for the initial table size - the actual value isn't critically
+        // important since the tables are resized as needed.
+        initLookupTables(25);
+    }
+    
+    public int getCurrentExp(Player player) {
+        int lvl = player.getLevel();
+        int cur = getXpForLevel(lvl) + (int) Math.round(xpRequiredForNextLevel[lvl] * player.getExp());
+        return cur;
+    }
+    
+    public int getXpForLevel(int level) {
+        if (level > hardMaxLevel) {
+            throw new IllegalArgumentException("Level " + level + " > hard max level " + hardMaxLevel);
+        }
+
+        if (level >= xpTotalToReachLevel.length) {
+            initLookupTables(level * 2);
+        }
+        return xpTotalToReachLevel[level];
+    }
+    
+    public int getLevelForExp(int exp) {
+        if (exp <= 0) {
+            return 0;
+        }
+        if (exp > xpTotalToReachLevel[xpTotalToReachLevel.length - 1]) {
+            // need to extend the lookup tables
+            int newMax = calculateLevelForExp(exp) * 2;
+            if (newMax > hardMaxLevel) {
+                throw new IllegalArgumentException("Level for exp " + exp + " > hard max level " + hardMaxLevel);
+            }
+            initLookupTables(newMax);
+        }
+        int pos = Arrays.binarySearch(xpTotalToReachLevel, exp);
+        return pos < 0 ? -pos - 2 : pos;
+    }
+    
+    public static int calculateLevelForExp(int exp) {
+        int level = 0;
+        int curExp = 7;	// level 1
+        int incr = 0;
+        while (curExp <= exp) {
+            curExp += incr;
+            level++;
+            incr += (level % 2 == 0) ? 3 : 4;
+        }
+        return level;
+    }
+    
+    public static void initLookupTables(int maxLevel) {
+        xpRequiredForNextLevel = new int[maxLevel];
+        xpTotalToReachLevel = new int[maxLevel];
+
+        xpTotalToReachLevel[0] = 0;
+
+        // Valid for MC 1.3 and later
+        int incr = 17;
+        for (int i = 1; i < xpTotalToReachLevel.length; i++) {
+            xpRequiredForNextLevel[i - 1] = incr;
+            xpTotalToReachLevel[i] = xpTotalToReachLevel[i - 1] + incr;
+            if (i >= 30) {
+                incr += 7;
+            } else if (i >= 16) {
+                incr += 3;
+            }
+        }
+        xpRequiredForNextLevel[xpRequiredForNextLevel.length - 1] = incr;
+        
+    }
+    
+	public int convertLevelToExp(int Levels){
+    	if (Levels <= 15)
+    	{
+    		return 17 * Levels;
+    	}
+    	else if (Levels <= 30)
+    	{
+    		return (3*Levels*Levels/2)-(59*Levels/2)+360;
+    	}
+    	else
+    	{
+    		return (7*Levels*Levels/2)-(303*Levels/2)+2220;
+    	}
 	}
 	
 	public void checar_act_p(Player player){
@@ -350,7 +498,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		//CARGAMOS CLASS "UpdateSignStateAllBanks.java"
 		updatesignstate = new UpdateSignStateAllBanks(this);
 		
-		if (player.isOnline()) player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW +traducir("closeaccount"));
+		if (player.isOnline()) player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("closeaccount"));
 		
 		//Obtenemos el banco anteriormente usado
 		File fileplayer = new File(getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
@@ -358,7 +506,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 //XLANG REQUIRED
 		int LastBank = FPlayer.getInt("info.use-last-bank");
 		if(LastBank==0){
-			player.sendMessage(ChatColor.RED+traducir("closebank-error-sessionclose"));
+			player.sendMessage(langCF("closebank-error-sessionclose"));
 		}else if(LastBank==1){
 			//BANK XP == 1
 			updatesignstate.updateSignStateBankXP(sign, 0, player);
@@ -373,7 +521,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		}else if(LastBank == 5){
 			updatesignstate.updateSignStateBankTime(sign, 0, player);
 		}else{
-			player.sendMessage(ChatColor.RED+traducir("closebank-error-bank-notfound-1")+ChatColor.WHITE+LastBank+ChatColor.RED+traducir("closebank-error-bank-notfound-2"));
+			player.sendMessage(langCF("closebank-error-bank-notfound-1").replaceAll("%banktype%", LastBank+""));
 		}
 		
 		
@@ -388,6 +536,13 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 	
 	public BankPlayer bankPlayerForPlayer(Player player) {
 		for (BankPlayer p : bankUsers.keySet()) {
+			if (p.getPlayer().equals(player)) return p;
+		}
+		return null;
+	}
+	
+	public MainLeaderboard leaderboardforplayer(Player player){
+		for (MainLeaderboard p : leaderboard.keySet()) {
 			if (p.getPlayer().equals(player)) return p;
 		}
 		return null;
@@ -449,25 +604,16 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		bPlayer.setTransferTemp(0);
 		bPlayer.setTransferPlayer(null);
 
-		switch (state) {
-		case 4: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + traducir("instdiamond"));
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("instdiamond2"));
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-		} break;
-		
+		switch (state) {		
 		case 1: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + traducir("action")+ChatColor.AQUA+ChatColor.ITALIC+traducir("borrow"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("borrowinstructions"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("borrowinstructions"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 
 		case 2: {
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + traducir("action")+ChatColor.AQUA+ChatColor.ITALIC+traducir("liquidateloan"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("liquidateloaninstructions"));
+				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("liquidateloaninstructions"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 
@@ -493,25 +639,25 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		switch (state) {
 		//XLANG REQUIRED
 		case 1: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+traducir("bankxp-deposit-lang-sign"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+langCF("bankxp-deposit-lang-sign"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankxp-instructions-deposit-xp-chat"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankxp-instructions-deposit-xp-chat"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 
 		case 2: {
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+traducir("bankxp-withdraw-lang-sign"));
+				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+langCF("bankxp-withdraw-lang-sign"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankxp-instructions-withdraw-xp-chat"));
+				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankxp-instructions-withdraw-xp-chat"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 		
 		case 3: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+traducir("bankxp-transfer-lang-sign"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank XP -> "+langCF("bankxp-transfer-lang-sign"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankxp-instructions-transfer-xp-chat"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankxp-instructions-transfer-xp-chat"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.DARK_AQUA+traducir("bank-xp-transfer-msg1"));
+			player.sendMessage(langCF("bank-xp-transfer-msg1"));
 	} break;
 
 		}
@@ -539,7 +685,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		case 1: {
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Esmerald");
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bank-esmerald-instructions-chat")+ChatColor.WHITE+""+ChatColor.BOLD+"Ready");
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bank-esmerald-instructions-chat"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 		}
@@ -564,25 +710,25 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		switch (state) {
 		//XLANG REQUIRED
 		case 1: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+traducir("bankxp-deposit-lang-sign"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+langCF("bankxp-deposit-lang-sign"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankmoney-instructions-deposit-money-chat"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankmoney-instructions-deposit-money-chat"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 
 		case 2: {
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+traducir("bankxp-withdraw-lang-sign"));
+				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+langCF("bankxp-withdraw-lang-sign"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankmoney-instructions-withdraw-money-chat"));
+				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankmoney-instructions-withdraw-money-chat"));
 				player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 		
 		case 3: {
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+traducir("bankxp-transfer-lang-sign"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Money -> "+langCF("bankxp-transfer-lang-sign"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.GREEN + traducir("bankmoney-instructions-transfer-money-chat"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bankmoney-instructions-transfer-money-chat"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD+"[INFO] "+traducir("bank-money-transfer-msg4"));
+			player.sendMessage(langCF("bank-money-transfer-msg4"));
 	} break;
 
 		}
@@ -609,7 +755,7 @@ public final class MainAllBank extends JavaPlugin implements Listener, CommandEx
 		case 1: {
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "Bank Time");
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + traducir("bank-time-instructions"));
+			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + langCF("bank-time-instructions"));
 			player.sendMessage(ChatColor.GOLD + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 		} break;
 		}

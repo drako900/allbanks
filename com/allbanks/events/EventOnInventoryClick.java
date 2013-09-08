@@ -8,7 +8,7 @@ import com.github.drako900.BankPlayer;
 import com.github.drako900.MainAllBank;
 
 public class EventOnInventoryClick {
-  
+	
 	MainAllBank plugin;
     public EventOnInventoryClick(MainAllBank MainAllBank) {
     	this.plugin = MainAllBank;

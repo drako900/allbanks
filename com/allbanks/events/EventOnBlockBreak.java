@@ -12,7 +12,7 @@ import com.github.drako900.BankPlayer;
 import com.github.drako900.MainAllBank;
 
 public class EventOnBlockBreak {
-  MainAllBank plugin;
+	MainAllBank plugin;
     public EventOnBlockBreak(MainAllBank MainAllBank) {
         this.plugin = MainAllBank;
     }
@@ -74,7 +74,7 @@ public class EventOnBlockBreak {
     	if(cant_destroy==false){
     	
     		if(sign4[0].equalsIgnoreCase(ChatColor.AQUA+"Bank -> Loan")||sign4[0].equalsIgnoreCase(ChatColor.WHITE+"Bank -> Money")||sign4[0].equalsIgnoreCase(ChatColor.GREEN+"Bank -> XP")||sign4[0].equalsIgnoreCase(ChatColor.YELLOW+"Bank Esmerald")||sign4[0].equalsIgnoreCase(ChatColor.WHITE+"Bank -> Time")){
-    			player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("signcantdestroy"));
+    			player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signcantdestroy"));
     			event.setCancelled(true);
     			return;
     		}
@@ -106,7 +106,7 @@ public class EventOnBlockBreak {
         	}		
         	
         	if(cant_destroy == true){
-        		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("signdestroy"));
+        		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signdestroy"));
 	        	
         		//Borramos cuenta
     			BankPlayer bPlayer = plugin.bankPlayerForPlayer(event.getPlayer());
@@ -118,7 +118,7 @@ public class EventOnBlockBreak {
     			}
         	}else{
         		//NO TIENE PERMISOS
-        		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("signcantdestroy")); 
+        		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signcantdestroy")); 
         		event.setCancelled(true); 
         		return;
         	}

@@ -4,7 +4,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
 public class BankPlayer {
-  
+	
 	private Sign sign;
 	private Player player;
 	private int state;

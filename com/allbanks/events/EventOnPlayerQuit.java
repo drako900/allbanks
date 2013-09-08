@@ -3,7 +3,6 @@ package com.allbanks.events;
 import java.io.File;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -12,7 +11,7 @@ import com.github.drako900.MainAllBank;
 import com.github.drako900.UpdateSignStateAllBanks;
 
 public class EventOnPlayerQuit {
-  
+	
 	MainAllBank plugin;
     public EventOnPlayerQuit(MainAllBank MainAllBank) {
     	this.plugin = MainAllBank;
@@ -49,6 +48,6 @@ public class EventOnPlayerQuit {
 			plugin.bankUsers.remove(bPlayer);
 			plugin.moveCheck.remove(event.getPlayer().getName());
 		}
-		Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+plugin.traducir("pleavep1")+event.getPlayer().getName()+plugin.traducir("pleavep2"));
+		Bukkit.getConsoleSender().sendMessage(plugin.langCF("pleavep1").replace("%player%", event.getPlayer().getName()));
    }
 }

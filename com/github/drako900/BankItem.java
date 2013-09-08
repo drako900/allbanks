@@ -3,7 +3,7 @@ package com.github.drako900;
 import org.bukkit.entity.Player;
 
 public class BankItem {
-  private int status;
+	private int status;
 	private Player player;
 	
 	BankItem(Player player, String status){

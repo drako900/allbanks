@@ -15,7 +15,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SystemChargeLoanRunnable {
-  
+	
    MainAllBank plugin;
    public SystemChargeLoanRunnable(MainAllBank MainAllBank) {
        this.plugin = MainAllBank;
@@ -36,16 +36,9 @@ public class SystemChargeLoanRunnable {
 	   
 		//REPETIR FUNCION CADA CIERTO TIEMPO
 		final int minutoscobrar = plugin.getConfig().getInt("BankLoan.timetax");
-
 		if(minutoscobrar==0){
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.traducir("time-nofound-timetax"));
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.traducir("time-nofound-timetax2"));
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.traducir("time-nofound-timetax3"));
-			//getConfig().set("BankLoan.timetax", 60);
-			
-			plugin.getServer().getPluginManager().disablePlugin(plugin);
+			return;
 		}
-		
 		final int totaltime = (minutoscobrar*1200);
 		
 	new BukkitRunnable() {
@@ -53,6 +46,7 @@ public class SystemChargeLoanRunnable {
 
 	  		
 	  		//END PREFIX
+			
 			
 			final int totaltime = (minutoscobrar*1200);
 			
@@ -140,8 +134,8 @@ public class SystemChargeLoanRunnable {
             		
             		if(taxesporcent<=0.0){
             			//ERROR, ¿Porciento de cobro en cero?
-            			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.traducir("time-configerror"));
-            			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.traducir("time-configerror2"));
+            			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.langCF("time-configerror"));
+            			Bukkit.getConsoleSender().sendMessage(ChatColor.RED+"[AllBanks] "+plugin.langCF("time-configerror2"));
             			
             		}else{
             			//Yeha! a cobrar
@@ -162,11 +156,11 @@ public class SystemChargeLoanRunnable {
 
             			if (pTo == null || !pTo.hasPlayedBefore()) {
             			    // Player doesnt exists
-            				plugin.getLogger().warning(plugin.traducir("time-cantfindplayer")+fileNames[i].replace(".yml", "")+plugin.traducir("time-cantfindplayer2"));
+            				plugin.getLogger().warning(plugin.langCF("time-cantfindplayer").replace("%player%", fileNames[i].replace(".yml", "")));
             			} else {
             			    if (pTo.isOnline()) {
             			        // player exists (online)
-            			    	player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("time-newcharge1")+total2+plugin.traducir("time-newcharge2"));
+            			    	player.sendMessage(ChatColor.GOLD+"[AllBanks] "+plugin.langCF("time-newcharge1").replace("%ammount%", total2+""));
             			    	econ.withdrawPlayer(fileNames[i].replace(".yml", ""), total2);
             			    } else {
             			        // player exists (offline)
@@ -187,24 +181,28 @@ public class SystemChargeLoanRunnable {
             }
            
 			   String fraseti="";
-			   Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+plugin.traducir("time-info-console")+ChatColor.AQUA+totaldeudores+ChatColor.GREEN+plugin.traducir("time-info-console1"));
-			   Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+plugin.traducir("time-newinfochar"));
-				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+plugin.traducir("time-newinfochar2"));
+               Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b----- AllBanks - BankLoan - System ----"));
+			   Bukkit.getConsoleSender().sendMessage(plugin.langCF("time-info-console").replace("%number%", totaldeudores+""));
+			   Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+plugin.langCF("time-newinfochar"));
+				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+plugin.langCF("time-newinfochar2"));
 			if(minutoscobrar>59){
-				fraseti = plugin.traducir("hours");
+				fraseti = plugin.langCF("hours");
 				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+(minutoscobrar/60)+" "+fraseti+" (Time:"+totaltime+")");
 				
 			}else{
-				fraseti = plugin.traducir("minutes");
+				fraseti = plugin.langCF("minutes");
 				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] "+minutoscobrar+" "+fraseti+" (Time:"+totaltime+")");
 			}
-			
+        	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b---------------------------------------"));
             }else if(fileNames.length>0){
-            	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"[AllBanks] INFO:");
-            	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+plugin.traducir("time-already-last-loan"));
-            	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+plugin.traducir("time-already-last-loan2"));
+                Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b----- AllBanks - BankLoan - System ----"));
+            	Bukkit.getConsoleSender().sendMessage(plugin.langCF("time-already-last-loan"));
+            	Bukkit.getConsoleSender().sendMessage(plugin.langCF("time-already-last-loan2"));
+            	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b---------------------------------------"));
             }else{
-            	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+plugin.traducir("time-already-last-loan3"));
+                Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b----- AllBanks - BankLoan - System ----"));
+            	Bukkit.getConsoleSender().sendMessage(plugin.langCF("time-already-last-loan3"));
+            	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b---------------------------------------"));
             }
 				
 			

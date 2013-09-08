@@ -5,7 +5,7 @@ import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class GenerateLang {
-  
+	
 	private MainAllBank plugin; // pointer to your main class, unrequired if you don't need methods from the main class
 	 
 	public GenerateLang(MainAllBank plugin) {
@@ -79,13 +79,24 @@ public class GenerateLang {
 					Boolean bankmoney_enable = true;
 					int bankmoney_maxsave = 0;
 					Boolean bankmoney_system = false;
+					int bankmoney_interes_porcent = 5;
+					int bankmoney_disbursed_interest_per_time = 120;
 					
 					Boolean bankxp_enable = true;
 					int bankxp_maxsave = 0;
 					
 					Boolean banktime_enable = true;
+					int banktime_give_money_per_period = 1;
+					int banktime_time_per_period = 1;
+					int banktime_max_give_money = -1;
 					
 					Boolean update_system_enable = true;
+					
+					Boolean send_metrics = true;
+					
+					int lottery_max_globals_tickets = -1;
+					int lottery_buy_cost_per_ticket = 50;
+					int lottery_get_winner_per_time = 120;
 					
 					lang = plugin.getConfig().getString("Plugin.language");
 					off_perm = plugin.getConfig().getBoolean("Plugin.off-permisions");
@@ -102,18 +113,30 @@ public class GenerateLang {
 					bankmoney_enable = plugin.getConfig().getBoolean("BankMoney.enable-bank");
 					bankmoney_maxsave = plugin.getConfig().getInt("BankMoney.max-money-save");
 					bankmoney_system = plugin.getConfig().getBoolean("BankMoney.interest-disbursted-system");
+					bankmoney_interes_porcent = plugin.getConfig().getInt("BankMoney.interest-porcent");
+					bankmoney_disbursed_interest_per_time = plugin.getConfig().getInt("BankMoney.disbursed-interest-per-time");
 					
 					bankxp_enable = plugin.getConfig().getBoolean("BankXP.enable-bank");
 					bankxp_maxsave = plugin.getConfig().getInt("BankXP.max-xp-levels-save");
 					
 					banktime_enable = plugin.getConfig().getBoolean("BankTime.enable-bank");
+					banktime_give_money_per_period = plugin.getConfig().getInt("BankTime.give-money-per-period");
+					banktime_time_per_period = plugin.getConfig().getInt("BankTime.time-per-period");
+					banktime_max_give_money = plugin.getConfig().getInt("BankTime.max-money-give");
 					
 					update_system_enable = plugin.getConfig().getBoolean("update.enable");
+					
+					send_metrics = plugin.getConfig().getBoolean("send-metrics.enable");
+
+					lottery_max_globals_tickets = plugin.getConfig().getInt("Lottery.max-global-tickets");
+					lottery_buy_cost_per_ticket = plugin.getConfig().getInt("Lottery.buy-cost-per-ticket");
+					lottery_get_winner_per_time = plugin.getConfig().getInt("Lottery.get-winner-per-time");
 					
 					rutac.delete();
 					plugin.saveResource("config.yml", true);
 					
 					//Establecemos valores
+					plugin.getConfig().set("Plugin.current-version", plugin.getDescription().getVersion());
 					plugin.getConfig().set("Plugin.language", lang);
 					plugin.getConfig().set("Plugin.off-permisions", off_perm);
 					plugin.getConfig().set("Plugin.disable-all-banks", all_banks_disabled);
@@ -129,13 +152,24 @@ public class GenerateLang {
 					plugin.getConfig().set("BankMoney.enable-bank", bankmoney_enable);
 					plugin.getConfig().set("BankMoney.max-money-save", bankmoney_maxsave);
 					plugin.getConfig().set("BankMoney.interest-disbursted-system", bankmoney_system);
+					plugin.getConfig().set("BankMoney.interest-porcent", bankmoney_interes_porcent);
+					plugin.getConfig().set("BankMoney.disbursed-interest-per-time", bankmoney_disbursed_interest_per_time);
 					
 					plugin.getConfig().set("BankXP.enable-bank", bankxp_enable);
 					plugin.getConfig().set("BankXP.max-xp-levels-save", bankxp_maxsave);
 					
 					plugin.getConfig().set("BankTime.enable-bank", banktime_enable);
+					plugin.getConfig().set("BankTime.give-money-per-period", banktime_give_money_per_period);
+					plugin.getConfig().set("BankTime.time-per-period", banktime_time_per_period);
+					plugin.getConfig().set("BankTime.max-money-give", banktime_max_give_money);
 					
 					plugin.getConfig().set("update.enable", update_system_enable);
+					
+					plugin.getConfig().set("send-metrics.enable", send_metrics);
+					
+					plugin.getConfig().set("Lottery.max-global-tickets", lottery_max_globals_tickets);
+					plugin.getConfig().set("Lottery.buy-cost-per-ticket", lottery_buy_cost_per_ticket);
+					plugin.getConfig().set("Lottery.get-winner-per-time", lottery_get_winner_per_time);
 					
 					plugin.saveConfig();
 					plugin.reloadConfig();

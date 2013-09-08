@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class UpdateSignStateAllBanks {
-  public static Economy econ = null;
+	public static Economy econ = null;
     MainAllBank plugin;
    public UpdateSignStateAllBanks(MainAllBank MainAllBank) {
        this.plugin = MainAllBank;
@@ -35,7 +35,7 @@ public class UpdateSignStateAllBanks {
 		case 0: {
 			sign.setLine(0, "" + ChatColor.GREEN + "Bank -> XP");
 			sign.setLine(1, "" + ChatColor.GREEN + "~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signwelcome"));
+			sign.setLine(2, "" + plugin.langCF("signwelcome"));
 			sign.setLine(3, "" + ChatColor.WHITE + "");
 		} break;
 
@@ -47,10 +47,27 @@ public class UpdateSignStateAllBanks {
 			File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 			int xpplayer_save = FPlayer.getInt("bankxp.xp-save");
+			int xpplayer_save2 = FPlayer.getInt("bankxp.xp-save-exp");
+			int xp_calcu = 0;
+			
+			if (xpplayer_save <= 15)
+			{
+				xp_calcu = 17 * xpplayer_save;
+			}
+			else if (xpplayer_save <= 30)
+			{
+				xp_calcu = (3*xpplayer_save*xpplayer_save/2)-(59*xpplayer_save/2)+360;
+			}
+			else
+			{
+				xp_calcu = (7*xpplayer_save*xpplayer_save/2)-(303*xpplayer_save/2)+2220;
+			}
+			
+			
 			
 			//XLANG REQUIRED
-				sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-deposit-lang-sign"));
-				sign.setLine(3, "" + ChatColor.YELLOW + xpplayer_save+" lvl");
+				sign.setLine(2, "" + plugin.langCF("bankxp-deposit-lang-sign"));
+				sign.setLine(3, "" + ChatColor.YELLOW + (xp_calcu+xpplayer_save2)+" exp");
 		} break;
 		
 		case 2: {
@@ -58,11 +75,26 @@ public class UpdateSignStateAllBanks {
 			File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 			int xpplayer_save = FPlayer.getInt("bankxp.xp-save");
+			int xpplayer_save2 = FPlayer.getInt("bankxp.xp-save-exp");
+			int xp_calcu = 0;
+			
+			if (xpplayer_save <= 15)
+			{
+				xp_calcu = 17 * xpplayer_save;
+			}
+			else if (xpplayer_save <= 30)
+			{
+				xp_calcu = (3*xpplayer_save*xpplayer_save/2)-(59*xpplayer_save/2)+360;
+			}
+			else
+			{
+				xp_calcu = (7*xpplayer_save*xpplayer_save/2)-(303*xpplayer_save/2)+2220;
+			}
 			
 			sign.setLine(0, "" + ChatColor.GREEN+ "Bank -> XP");
 			sign.setLine(1, "" + ChatColor.GREEN+"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-withdraw-lang-sign"));
-			sign.setLine(3, "" + ChatColor.YELLOW + xpplayer_save+" lvl");
+			sign.setLine(2, "" + plugin.langCF("bankxp-withdraw-lang-sign"));
+			sign.setLine(3, "" + ChatColor.YELLOW + (xp_calcu+xpplayer_save2)+" exp");
 		} break;
 		
 		case 3: {
@@ -70,11 +102,26 @@ public class UpdateSignStateAllBanks {
 			File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 			int xpplayer_save = FPlayer.getInt("bankxp.xp-save");
+			int xpplayer_save2 = FPlayer.getInt("bankxp.xp-save-exp");
+			int xp_calcu = 0;
+			
+			if (xpplayer_save <= 15)
+			{
+				xp_calcu = 17 * xpplayer_save;
+			}
+			else if (xpplayer_save <= 30)
+			{
+				xp_calcu = (3*xpplayer_save*xpplayer_save/2)-(59*xpplayer_save/2)+360;
+			}
+			else
+			{
+				xp_calcu = (7*xpplayer_save*xpplayer_save/2)-(303*xpplayer_save/2)+2220;
+			}
 			
 			sign.setLine(0, "" + ChatColor.GREEN + "Bank -> XP");
 			sign.setLine(1, "" + ChatColor.GREEN +"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-transfer-lang-sign"));
-			sign.setLine(3, "" + ChatColor.YELLOW + xpplayer_save+" lvl");
+			sign.setLine(2, "" + plugin.langCF("bankxp-transfer-lang-sign"));
+			sign.setLine(3, "" + ChatColor.YELLOW + (xp_calcu+xpplayer_save2)+" exp");
 		} break;
 		
 		}
@@ -90,7 +137,7 @@ public class UpdateSignStateAllBanks {
 		case 0: {
 			sign.setLine(0, "" + ChatColor.AQUA + "Bank -> Loan");
 			sign.setLine(1, "" + ChatColor.AQUA + "~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signwelcome"));
+			sign.setLine(2, "" + plugin.langCF("signwelcome"));
 			sign.setLine(3, "" + ChatColor.WHITE + "");
 		} break;
 
@@ -106,10 +153,10 @@ public class UpdateSignStateAllBanks {
 			sign.setLine(0, "" + ChatColor.AQUA + "Bank -> Loan");
 			sign.setLine(1, "" + ChatColor.AQUA +"~~~~~~~~~~~~");
 			if(resta==0){
-				sign.setLine(2, "" + ChatColor.RED + plugin.traducir("maxreach1"));
-				sign.setLine(3, "" + ChatColor.RED + plugin.traducir("maxreach2"));
+				sign.setLine(2, "" + plugin.langCF("maxreach1"));
+				sign.setLine(3, "" + plugin.langCF("maxreach2"));
 			}else{
-				sign.setLine(2, "" + ChatColor.YELLOW + plugin.traducir("signask"));
+				sign.setLine(2, "" + plugin.langCF("signask"));
 				sign.setLine(3, "" + ChatColor.GREEN + econ.format(resta));
 			}
 		} break;
@@ -122,22 +169,8 @@ public class UpdateSignStateAllBanks {
 	        
 			sign.setLine(0, "" + ChatColor.AQUA+ "Bank -> Loan");
 			sign.setLine(1, "" + ChatColor.AQUA+"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signliquidate"));
+			sign.setLine(2, "" + plugin.langCF("signliquidate"));
 			sign.setLine(3, "" + ChatColor.RED + econ.format(loanactual));
-		} break;
-		
-		case 3: {
-			sign.setLine(0, "" + ChatColor.AQUA + "Bank -> Loan");
-			sign.setLine(1, "" + ChatColor.AQUA +"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.YELLOW + plugin.traducir("signtransfer"));
-			sign.setLine(3, "" + ChatColor.YELLOW + "ERROR");
-		} break;
-		
-		case 4: {
-			sign.setLine(0, "" + ChatColor.AQUA + "Bank -> Loan");
-			sign.setLine(1, "" + ChatColor.AQUA +"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.YELLOW + plugin.traducir("signbalance"));
-			sign.setLine(3, "" + ChatColor.GREEN + "$0.00");
 		} break;
 		
 		}
@@ -153,7 +186,7 @@ public class UpdateSignStateAllBanks {
 		case 0: {
 			sign.setLine(0, "" + ChatColor.YELLOW + "Bank Esmerald");
 			sign.setLine(1, "" + ChatColor.YELLOW + "~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signwelcome"));
+			sign.setLine(2, "" + plugin.langCF("signwelcome"));
 			sign.setLine(3, "" + ChatColor.WHITE + "");
 		} break;
 
@@ -193,7 +226,7 @@ public class UpdateSignStateAllBanks {
 		case 0: {
 			sign.setLine(0, "" + ChatColor.WHITE + "Bank -> Money");
 			sign.setLine(1, "" + ChatColor.WHITE + "~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signwelcome"));
+			sign.setLine(2, "" + plugin.langCF("signwelcome"));
 			sign.setLine(3, "" + ChatColor.WHITE + "");
 		} break;
 
@@ -207,7 +240,7 @@ public class UpdateSignStateAllBanks {
 			int moneyp_save = FPlayer.getInt("bankmoney.save-money");
 			
 			//XLANG REQUIRED
-				sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-deposit-lang-sign"));
+				sign.setLine(2, "" + ChatColor.AQUA + plugin.langCF("bankxp-deposit-lang-sign"));
 				sign.setLine(3, "" + ChatColor.YELLOW + "$"+moneyp_save);
 		} break;
 		
@@ -219,7 +252,7 @@ public class UpdateSignStateAllBanks {
 			
 			sign.setLine(0, "" + ChatColor.WHITE+ "Bank -> Money");
 			sign.setLine(1, "" + ChatColor.WHITE+"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-withdraw-lang-sign"));
+			sign.setLine(2, "" + ChatColor.AQUA + plugin.langCF("bankxp-withdraw-lang-sign"));
 			sign.setLine(3, "" + ChatColor.YELLOW + "$"+moneyp_save);
 		} break;
 		
@@ -231,7 +264,7 @@ public class UpdateSignStateAllBanks {
 			
 			sign.setLine(0, "" + ChatColor.WHITE + "Bank -> Money");
 			sign.setLine(1, "" + ChatColor.WHITE +"~~~~~~~~~~~~");
-			sign.setLine(2, "" + ChatColor.AQUA + plugin.traducir("bankxp-transfer-lang-sign"));
+			sign.setLine(2, "" + ChatColor.AQUA + plugin.langCF("bankxp-transfer-lang-sign"));
 			sign.setLine(3, "" + ChatColor.YELLOW + "$"+moneyp_save);
 		} break;
 		
@@ -249,7 +282,7 @@ public class UpdateSignStateAllBanks {
 			case 0: {
 				sign.setLine(0, "" + ChatColor.WHITE+ "Bank -> Time");
 				sign.setLine(1, "" + ChatColor.WHITE + "~~~~~~~~~~~~");
-				sign.setLine(2, "" + ChatColor.GREEN + plugin.traducir("signwelcome"));
+				sign.setLine(2, "" + plugin.langCF("signwelcome"));
 				sign.setLine(3, "" + ChatColor.WHITE + "");
 			} break;
 		
@@ -261,7 +294,7 @@ public class UpdateSignStateAllBanks {
 				
 				
 				sign.setLine(0, "" + ChatColor.WHITE+ "Bank -> Time");
-				sign.setLine(1, ChatColor.WHITE+plugin.traducir("signwelcome"));
+				sign.setLine(1, plugin.langCF("signwelcome"));
 				sign.setLine(2, ChatColor.AQUA+""+ChatColor.BOLD+player.getPlayer().getName());
 				sign.setLine(3, ChatColor.GREEN+""+actual_time+" minutes");
 			} break;

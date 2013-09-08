@@ -22,7 +22,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class CommandsAllBanks implements CommandExecutor {
-  
+	
 	MainAllBank plugin;
     public CommandsAllBanks(MainAllBank MainAllBank) {
     	this.plugin = MainAllBank;
@@ -99,190 +99,9 @@ public class CommandsAllBanks implements CommandExecutor {
     
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		if(sender instanceof Player && label.equalsIgnoreCase("allbanks") && args.length > 0){
-			 int lottery_buy_cost = 50;
-			
-		if(args[0].equalsIgnoreCase("lottery")){
-			if(args.length>=2){
-			
-			}else{
-				return false;
-			}
-			
-			//Bank Lottery
-			if(args[1].equalsIgnoreCase("force-get-winner")){
-				
-				//permission
-				if(!sender.hasPermission("allbanks.command.lottery.forcewinner")){
-					sender.sendMessage(ChatColor.RED+plugin.traducir("lottery-msg10"));
-					return true;
-				}
-				
-				String path  = plugin.getDataFolder() + "/lottery/tickets/";
-				String pathp  = plugin.getDataFolder() + "/lottery/";
-	            File folder = new File(path);
-	            File folderp = new File(pathp);
-	            
-	            if(!folder.exists()) folder.mkdirs();
-	            if(!folderp.exists()) folderp.mkdirs();
-	            
-	            String[] fileNames = folder.list();
-				
-				int min = 0;
-				
-				
-				int max = fileNames.length;
-				
-				if(max==0){
-					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-					sender.sendMessage(ChatColor.RED+plugin.traducir("lottery-msg4"));
-					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-					return true;
-				}
-				
-				Random rnd = new Random();
-				
-					 //get owner for this ticket
-					 int ganador = rnd.nextInt(max-min);
-					 	File ticket = new File(path+ganador+".yml");
-						FileConfiguration yamlx = YamlConfiguration.loadConfiguration(ticket);
-					 
-						String playerg = yamlx.getString("lottery.owner");
-						
-					 sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-				     sender.sendMessage(ChatColor.DARK_GREEN+plugin.traducir("lottery-msg5")+ChatColor.DARK_AQUA+ganador+ChatColor.DARK_GREEN);
-				     sender.sendMessage(ChatColor.DARK_GREEN+plugin.traducir("lottery-msg6")+ChatColor.DARK_AQUA+playerg+ChatColor.DARK_GREEN);
-				     sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-				     
-				     //broadcast
-				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+ChatColor.YELLOW+plugin.traducir("lottery-msg7").replace("%player%", ChatColor.DARK_AQUA+sender.getName()));
-				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+ChatColor.GREEN+plugin.traducir("lottery-msg2").replace("%player%", playerg));
-				     
-				     int total_won = max * lottery_buy_cost;
-				     
-				     //deposit money
-				     econ.depositPlayer(playerg, total_won);
-				     
-				     //get player online/ofline
-				     OfflinePlayer pTo = plugin.getServer().getPlayer(playerg);
+			 
 
-				     if (pTo == null) {
-				         pTo = plugin.getServer().getOfflinePlayer(playerg);
-				     }
-
-				     if (pTo == null || !pTo.hasPlayedBefore()) {
-				         // Player doesnt exists
-				     } else {
-				         if (pTo.isOnline()) {
-				             // player exists (online)
-				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_GREEN+plugin.traducir("lottery-msg3").replace("%money%", total_won+""));
-				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-				         } else {
-				             // player exists (offline)
-				         }
-				     }
-				     
-				     //deleting tickets...
-						for(int i = 0; i < max; i++){
-							String pathx  = plugin.getDataFolder() + "/lottery/tickets/"+i+".yml";
-							File datax = new File(pathx);
-							
-							datax.delete();
-						}
-				     
-				     return true;
-				     
-			}else if(args[1].equalsIgnoreCase("buy")){
-				
-				//permission
-				if(!sender.hasPermission("allbanks.command.lottery.buyticket")){
-					sender.sendMessage(ChatColor.RED+plugin.traducir("lottery-msg10"));
-					return true;
-				}
-				
-				if(args.length>=3){
-				
-				}else{
-					return false;
-				}
-				
-				int cantidad = Integer.parseInt(args[2]);
-				String path  = plugin.getDataFolder() + "/lottery/tickets/";
-	            File folder = new File(path);
-	            
-	            if(!folder.exists()){
-	            	folder.mkdirs();
-	            }
-	            
-	           
-	            int total = cantidad * lottery_buy_cost;
-	            
-	            //check money in your account...
-	            if(!econ.has(sender.getName(), total)){
-					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-					sender.sendMessage(ChatColor.RED+plugin.traducir("lottery-msg8"));
-					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-	            	return true;
-	            }
-	            
-				String[] fileNames = folder.list();
-				for(int i = 0; i < cantidad; i++){
-					String pathx  = plugin.getDataFolder() + "/lottery/tickets/"+(fileNames.length+i)+".yml";
-					File datax = new File(pathx);
-					
-					String pathx0 = plugin.getDataFolder() + "/lottery/tickets/";
-					File datax0 = new File(pathx0);
-					
-					if(!datax0.exists()){
-						datax0.mkdirs();
-					}
-					
-					String pathx3  = plugin.getDataFolder() + File.separator + "lottery"+ File.separator +"players";
-					File datax3 = new File(pathx3);
-					
-					if(!datax3.exists()){
-						datax3.mkdirs();
-					}
-					
-					//Participantes
-					String pathx2  = plugin.getDataFolder() + File.separator + "lottery"+ File.separator +"players"+ File.separator +sender.getName()+".yml";
-					File datax2 = new File(pathx2);
-					
-					try {
-						datax.createNewFile();
-						datax2.createNewFile();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					FileConfiguration yamlx = YamlConfiguration.loadConfiguration(datax);
-					
-					yamlx.set("lottery.owner", sender.getName());
-
-					try {
-						yamlx.save(datax);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-				
-				sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-				sender.sendMessage(ChatColor.DARK_GREEN+plugin.traducir("lottery-msg9").replace("%amount%", ChatColor.DARK_AQUA+""+cantidad+ChatColor.DARK_GREEN));
-				sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
-				econ.withdrawPlayer(sender.getName(), total);
-				return true;
-				
-				
-			}else{
-				//Unknown command
-				
-			}
-			
-			
-		}else if (args[0].equalsIgnoreCase("list-banks")) {
+			 if (args[0].equalsIgnoreCase("list-banks")) {
 				
 				//Permission
 				if(!sender.hasPermission("allbanks.command.list-banks")){
@@ -327,8 +146,8 @@ public class CommandsAllBanks implements CommandExecutor {
 									sender.sendMessage(ChatColor.WHITE+"1. /allbanks help "+ChatColor.DARK_GREEN+"[page] "+ChatColor.DARK_AQUA+": Display help page.");
 									sender.sendMessage(ChatColor.WHITE+"2. /allbanks disable-bank ? "+ChatColor.DARK_AQUA+": Display help page for this command.");
 									sender.sendMessage(ChatColor.WHITE+"3. /allbanks removep "+ChatColor.DARK_GREEN+"[player] "+ChatColor.DARK_AQUA+": Remove a player from allbanks");
-									sender.sendMessage(ChatColor.WHITE+"4. /allbanks lottery force-get-winner"+ChatColor.DARK_AQUA+": Gets a lottery winner");
-									sender.sendMessage(ChatColor.WHITE+"5. /allbanks lottery buy "+ChatColor.DARK_GREEN+"[amount] "+ChatColor.DARK_AQUA+": Buy tickets");					
+									sender.sendMessage(ChatColor.WHITE+"4. /lottery force-get-winner"+ChatColor.DARK_AQUA+": Gets a lottery winner");
+									sender.sendMessage(ChatColor.WHITE+"5. /lottery buy "+ChatColor.DARK_GREEN+"[amount] "+ChatColor.DARK_AQUA+": Buy tickets");					
 									sender.sendMessage(ChatColor.DARK_AQUA+"/////////////////////////////////////////////");
 									return true;
 							default:
@@ -440,6 +259,203 @@ public class CommandsAllBanks implements CommandExecutor {
 			
 	            // do something
 	            return false;
+		}else if(sender instanceof Player && label.equalsIgnoreCase("lottery") && args.length > 0){
+			int lottery_buy_cost = plugin.getConfig().getInt("Lottery.buy-cost-per-ticket");
+			
+			//COMMAND LOTTERY
+			if(args.length>=1){
+			
+			}else{
+				return false;
+			}
+			
+			//Bank Lottery
+			if(args[0].equalsIgnoreCase("force-get-winner")){
+				
+				//permission
+				if(!sender.hasPermission("allbanks.command.lottery.forcewinner")){
+					sender.sendMessage(plugin.langCF("lottery-msg10"));
+					return true;
+				}
+				
+				String path  = plugin.getDataFolder() + "/lottery/tickets/";
+				String pathp  = plugin.getDataFolder() + "/lottery/";
+	            File folder = new File(path);
+	            File folderp = new File(pathp);
+	            
+	            if(!folder.exists()) folder.mkdirs();
+	            if(!folderp.exists()) folderp.mkdirs();
+	            
+	            String[] fileNames = folder.list();
+				
+				int min = 0;
+				
+				
+				int max = fileNames.length;
+				
+				if(max==0){
+					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+					sender.sendMessage(plugin.langCF("lottery-msg4"));
+					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+					return true;
+				}
+				
+				Random rnd = new Random();
+				
+					 //get owner for this ticket
+					 int ganador = rnd.nextInt(max-min);
+					 	File ticket = new File(path+ganador+".yml");
+						FileConfiguration yamlx = YamlConfiguration.loadConfiguration(ticket);
+					 
+						String playerg = yamlx.getString("lottery.owner");
+						
+					 sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+				     sender.sendMessage(plugin.langCF("lottery-msg5")+ChatColor.DARK_AQUA+ganador+ChatColor.DARK_GREEN);
+				     sender.sendMessage(plugin.langCF("lottery-msg6")+ChatColor.DARK_AQUA+playerg+ChatColor.DARK_GREEN);
+				     sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+				     
+				     //broadcast
+				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+plugin.langCF("lottery-msg7").replace("%player%", ChatColor.DARK_AQUA+sender.getName()));
+				     Bukkit.broadcastMessage(ChatColor.GOLD+"[AB-Lottery] "+plugin.langCF("lottery-msg2").replace("%player%", playerg));
+				     
+				     int total_won = max * lottery_buy_cost;
+				     
+				     //deposit money
+				     econ.depositPlayer(playerg, total_won);
+				     
+				     //get player online/ofline
+				     OfflinePlayer pTo = plugin.getServer().getPlayer(playerg);
+
+				     if (pTo == null) {
+				         pTo = plugin.getServer().getOfflinePlayer(playerg);
+				     }
+
+				     if (pTo == null || !pTo.hasPlayedBefore()) {
+				         // Player doesnt exists
+				     } else {
+				         if (pTo.isOnline()) {
+				             // player exists (online)
+				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+				        	 Bukkit.getPlayer(playerg).sendMessage(plugin.langCF("lottery-msg3").replace("%money%", total_won+""));
+				        	 Bukkit.getPlayer(playerg).sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+				         } else {
+				             // player exists (offline)
+				         }
+				     }
+				     
+				     //deleting tickets...
+						for(int i = 0; i < max; i++){
+							String pathx  = plugin.getDataFolder() + "/lottery/tickets/"+i+".yml";
+							File datax = new File(pathx);
+							
+							datax.delete();
+						}
+				     
+				     return true;
+			
+			}else if(args[0].equalsIgnoreCase("buy")){
+				
+				//permission
+				if(!sender.hasPermission("allbanks.command.lottery.buyticket")){
+					sender.sendMessage(plugin.langCF("lottery-msg10"));
+					return true;
+				}
+				
+				if(args.length>=2){
+				
+				}else{
+					return false;
+				}
+				
+				int cantidad = Integer.parseInt(args[1]);
+				String path  = plugin.getDataFolder() + "/lottery/tickets/";
+	            File folder = new File(path);
+	            String[] current_tickets = folder.list();
+	            int current_ammount_tickets = current_tickets.length;
+	            
+	            if(current_ammount_tickets>=plugin.getConfig().getInt("Lottery.max-global-tickets")){
+	            	if(plugin.getConfig().getInt("Lottery.max-global-tickets")<=-1){
+	            		
+	            	}else{
+	            		//Lang required
+	            		sender.sendMessage(plugin.parseFormatChat("&cError, max tickets reached."));
+	            		return true;
+	            	}
+	            }
+	            
+	            if(!folder.exists()){
+	            	folder.mkdirs();
+	            }
+	            
+	           
+	            int total = cantidad * lottery_buy_cost;
+	            
+	            //check money in your account...
+	            if(!econ.has(sender.getName(), total)){
+					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+					sender.sendMessage(plugin.langCF("lottery-msg8"));
+					sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+	            	return true;
+	            }
+	            
+				String[] fileNames = folder.list();
+				for(int i = 0; i < cantidad; i++){
+					String pathx  = plugin.getDataFolder() + "/lottery/tickets/"+(fileNames.length+i)+".yml";
+					File datax = new File(pathx);
+					
+					String pathx0 = plugin.getDataFolder() + "/lottery/tickets/";
+					File datax0 = new File(pathx0);
+					
+					if(!datax0.exists()){
+						datax0.mkdirs();
+					}
+					
+					String pathx3  = plugin.getDataFolder() + File.separator + "lottery"+ File.separator +"players";
+					File datax3 = new File(pathx3);
+					
+					if(!datax3.exists()){
+						datax3.mkdirs();
+					}
+					
+					//Participantes
+					String pathx2  = plugin.getDataFolder() + File.separator + "lottery"+ File.separator +"players"+ File.separator +sender.getName()+".yml";
+					File datax2 = new File(pathx2);
+					
+					try {
+						datax.createNewFile();
+						datax2.createNewFile();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					FileConfiguration yamlx = YamlConfiguration.loadConfiguration(datax);
+					
+					yamlx.set("lottery.owner", sender.getName());
+
+					try {
+						yamlx.save(datax);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				
+				sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+				sender.sendMessage(plugin.langCF("lottery-msg9").replace("%amount%", ChatColor.DARK_AQUA+""+cantidad+ChatColor.DARK_GREEN));
+				sender.sendMessage(ChatColor.DARK_PURPLE+"-=-=-=-=-=-=-=-=-=-=");
+				econ.withdrawPlayer(sender.getName(), total);
+				return true;
+				
+				
+			}else{
+				//Unknown command
+				
+			}
+			
+			
+		
 		}else{
 			//ENVIADO DESDE CONSOLA
 		}

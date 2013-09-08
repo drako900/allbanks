@@ -18,9 +18,9 @@ public class CheckUpdate {
     }
  
     
-  private String currentVersion;
+	private String currentVersion;
     private String readurl = "https://raw.github.com/drako900/allbanks/master/mainversion.txt";
- 
+    
     public void startUpdateCheck() {
     	
     	
@@ -37,7 +37,6 @@ public class CheckUpdate {
             
             
             try {
-                log.info("Checking for a new version...");
                 URL url = new URL(readurl);
                 BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
                 String str;
@@ -50,13 +49,15 @@ public class CheckUpdate {
                     String line = str;
                     String new_v = null;
                     
-                    if (line.equalsIgnoreCase("version: "+currentVersion) && i==1) {
-                        log.info("No update found...");
+                    if(i==1){
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b------- AllBanks - Update Check -------"));
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&a<- Connecting to server..."));
+                    if ((line.equalsIgnoreCase("version: "+currentVersion)||line.equalsIgnoreCase("version: 1.6.3")||line.equalsIgnoreCase("version: 1.6.4")) && i==1) {
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b-> Message: No update found (v"+currentVersion+")"));
                     }else if(i==1){
-                    	
-                    	log.info("Update found! ");
-                    	log.info("current version: "+currentVersion);
-                    	log.info("new version found, "+line);
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b-> Message: New Update found! (v"+line+")"));
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b-> Current version: v"+currentVersion));
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b-> New version: v"+line));
                     	new_v = line;
                     	update_found = true;
                     	
@@ -70,11 +71,15 @@ public class CheckUpdate {
                 		}
                     }
                     
+                    	Bukkit.getConsoleSender().sendMessage(plugin.parseFormatChat("&b---------------------------------------"));
+                    	
+                    }
+                    
                     //2DA LINEA FORCE UPDATE
                     if(i==2 && update_found == true){
                 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 			if(player.isOp()||player.hasPermission("allbanks.info.updateavaible")){
-                				player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.AQUA+"Download (Clic URL) "+line);
+                				player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.AQUA+"Download: http://dev.bukkit.org/bukkit-plugins/all-banks/files/");
                 			}
                 		}
 						
@@ -134,7 +139,7 @@ public class CheckUpdate {
                 
                 //2DA LINEA FORCE UPDATE
                 if(i==2 && update_found == true){
-                	player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.AQUA+"Download (Clic URL) "+line);
+                	player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.AQUA+"Download: http://dev.bukkit.org/bukkit-plugins/all-banks/files/");
                 }
                 
                 if(i==3 && update_found == true){
@@ -148,4 +153,5 @@ public class CheckUpdate {
         } catch (IOException e) {
         	
         }
+}
 }

@@ -3,7 +3,7 @@ package com.github.drako900;
 import org.bukkit.entity.Player;
 
 public class TransferStatus {
-  
+	
 	Player player;
 	Player second_p;
 	int step = 0;

@@ -1,5 +1,5 @@
 Plugin:
-  current-version: '1.6.2'
+  current-version: '1.6.5'
   language: english
   off-permisions: false
   disable-all-banks: false
@@ -14,11 +14,22 @@ BankEsmerald:
 BankMoney:
   enable-bank: true
   max-money-save: 0
-  interest-disbursted-system: false
+  interest-disbursted-system: true
+  interest-porcent: 5
+  disbursed-interest-per-time: 120
 BankXP:
   enable-bank: true
   max-xp-levels-save: 0
 BankTime:
   enable-bank: true
+  give-money-per-period: 1
+  time-per-period: 1
+  max-money-give: -1
 update:
   enable: true
+send-metrics:
+  enable: true
+Lottery:
+  max-global-tickets: -1
+  buy-cost-per-ticket: 50
+  get-winner-per-time: 120

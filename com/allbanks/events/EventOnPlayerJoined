@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.github.drako900.MainAllBank;
 
 public class EventOnPlayerJoined {
-  
+	
 	   //ECONOMY
 		public static Economy econ = null;
 	   public boolean setupEconomy(){
@@ -55,8 +55,8 @@ public class EventOnPlayerJoined {
 		//Comprobamos si ya tiene archivo el usuario que se ha unido
     if (!playerdata.exists()) {
     	if(!carpetapdata.exists()) carpetapdata.mkdir();
-    	Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+plugin.traducir("joinplay1")+event.getPlayer().getName()+plugin.traducir("joinplay2"));
-    	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+plugin.traducir("newacount1")+event.getPlayer().getName());
+    	Bukkit.getConsoleSender().sendMessage(plugin.langCF("joinplay1").replace("%player%", event.getPlayer().getName()));
+    	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+plugin.langCF("newacount1").replace("%player%",event.getPlayer().getName()));
     	try {
 			playerdata.createNewFile();
 			//Prestamo por default = 0
@@ -72,7 +72,7 @@ public class EventOnPlayerJoined {
 			
 		}
     }else{
-    	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN+plugin.traducir("joinplay1")+event.getPlayer().getName()+plugin.traducir("joinplay3"));
+    	Bukkit.getConsoleSender().sendMessage(plugin.langCF("joinplay4").replace("%player%", event.getPlayer().getName()));
     }
     
     //calculamos pendientes
@@ -84,9 +84,9 @@ public class EventOnPlayerJoined {
 	if(cobropendiente==0){
 		
 	}else{
-		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.AQUA+plugin.traducir("time-infoplayercharged")+cobropendiente+plugin.traducir("time-infoplayercharged2"));
-		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.AQUA+plugin.traducir("time-infoplayercharged3")+econ.getBalance(event.getPlayer().getName())+plugin.traducir("time-infoplayercharged4"));
-		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.YELLOW+plugin.traducir("time-infoplayercharged5"));
+		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("time-infoplayercharged").replace("%ammount%", cobropendiente+""));
+		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("time-infoplayercharged3").replace("%ammount%", econ.getBalance(event.getPlayer().getName())+""));
+		event.getPlayer().sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("time-infoplayercharged5"));
 		deudap.set("user.pendingtax", 0);
 		try{
 			deudap.save(datosp);

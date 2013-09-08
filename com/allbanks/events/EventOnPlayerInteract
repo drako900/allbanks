@@ -17,9 +17,11 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import com.github.drako900.BankPlayer;
 import com.github.drako900.MainAllBank;
+import com.github.drako900.MainLeaderboard;
 
 public class EventOnPlayerInteract {
-  
+	
+
 	   //ECONOMY
 		public static Economy econ = null;
 	   public boolean setupEconomy(){
@@ -39,9 +41,13 @@ public class EventOnPlayerInteract {
 	@SuppressWarnings("unused")
 	public void OnPlayerInteract(PlayerInteractEvent event){
 		
+		Player player = event.getPlayer();
+		
+		
+		
 		Block clickedBlock = event.getClickedBlock();
 		
-		Player player = event.getPlayer();
+		
 		
 		if(clickedBlock==null){
 			return;
@@ -54,16 +60,192 @@ public class EventOnPlayerInteract {
     		if (signBlock.getTypeId() != 68) return;
 			Sign sign = (Sign)signBlock.getState();
 			Action action = event.getAction();
+		    
+			//AllBanks 1.6.2
+			if (player.getItemInHand() != null && player.getItemInHand().getType().equals(Material.STICK) && action == Action.LEFT_CLICK_BLOCK){
 
+				
+				//guardamos
+				
+					if(plugin.leaderboard.containsValue(player.getName())){
+						
+					}else{
+						plugin.leaderboard.put(new MainLeaderboard(player), player.getName());
+					}
+					
+					MainLeaderboard mainleaderboard = plugin.leaderboardforplayer(player);
+					if(mainleaderboard == null){
+						event.setCancelled(true);
+						return;
+					}else{
+						if(mainleaderboard.getSignNumber()==1){
+							player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"Select a second sign.");
+							//already first sign set
+							if(mainleaderboard.getFirstSign()==null){
+								
+								sign.setLine(0, ChatColor.WHITE+"[AllBanks]");
+								sign.setLine(1, ChatColor.WHITE+"[Lottery]");
+								sign.setLine(2, ChatColor.WHITE+"[Leaderboard]");
+								sign.setLine(3, ChatColor.WHITE+"First sign");
+								sign.update();
+								mainleaderboard.setFirstSign(sign);
+								mainleaderboard.setSignNumber(2);
+							}else{
+								Sign lastsign = mainleaderboard.getFirstSign();
+								lastsign.setLine(0, "");
+								lastsign.setLine(1, "");
+								lastsign.setLine(2, "");
+								lastsign.setLine(3, "");
+								lastsign.update();
+								
+								sign.setLine(0, ChatColor.WHITE+"[AllBanks]");
+								sign.setLine(1, ChatColor.WHITE+"[Lottery]");
+								sign.setLine(2, ChatColor.WHITE+"[Leaderboard]");
+								sign.setLine(3, ChatColor.WHITE+"First sign ");
+								sign.update();
+								
+								mainleaderboard.setFirstSign(sign);
+								mainleaderboard.setSignNumber(2);
+							}
+						}else{
+							player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"Use command "+ChatColor.DARK_AQUA+"/allbanks leaderboard new"+ChatColor.GRAY+" to finish, otherwise, select a first sign again.");
+							//already first sign set
+							if(mainleaderboard.getSecondSign()==null){
+								
+								sign.setLine(0, ChatColor.WHITE+"[AllBanks]");
+								sign.setLine(1, ChatColor.WHITE+"[Lottery]");
+								sign.setLine(2, ChatColor.WHITE+"[Leaderboard]");
+								sign.setLine(3, ChatColor.WHITE+"Second sign");
+								sign.update();
+								mainleaderboard.setSecondSign(sign);
+								mainleaderboard.setSignNumber(1);
+							}else{
+								Sign lastsign = mainleaderboard.getSecondSign();
+								lastsign.setLine(0, "");
+								lastsign.setLine(1, "");
+								lastsign.setLine(2, "");
+								lastsign.setLine(3, "");
+								lastsign.update();
+								
+								
+								sign.setLine(0, ChatColor.WHITE+"[AllBanks]");
+								sign.setLine(1, ChatColor.WHITE+"[Lottery]");
+								sign.setLine(2, ChatColor.WHITE+"[Leaderboard]");
+								sign.setLine(3, ChatColor.WHITE+"Second sign ");
+								sign.update();
+								mainleaderboard.setSecondSign(sign);
+								mainleaderboard.setSignNumber(1);
+							}
+						}
+					}
+				
+				
+				event.setCancelled(true);
+				return;
+			}
+			
 			if (!sign.getLine(0).equals(ChatColor.AQUA + "Bank -> Loan")&&!sign.getLine(0).equals(ChatColor.GREEN + "Bank -> XP")&&!sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Money")&&!sign.getLine(0).equals(ChatColor.YELLOW + "Bank Esmerald")&&!sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Time")) return;
-			if(action == Action.RIGHT_CLICK_BLOCK){}else{ return; }
+			if(action == Action.RIGHT_CLICK_BLOCK){}else{ 
+				//AllBanks 1.6.2 - Cambiamos el letrero al golpear con un item en específico
+				if (player.getItemInHand() != null && player.getItemInHand().getType().equals(Material.BONE)) {
+				    // Code         
+					if(!player.hasPermission("a.item.changebank")) return;
+					
+					//switch
+					int thisbank = 0;
+					if(sign.getLine(0).equals(ChatColor.AQUA + "Bank -> Loan")) thisbank = 1;
+					if(sign.getLine(0).equals(ChatColor.GREEN + "Bank -> XP")) thisbank = 2;
+					if(sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Money")) thisbank = 3;
+					if(sign.getLine(0).equals(ChatColor.YELLOW + "Bank Esmerald")) thisbank = 4;
+					if(sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Time")) thisbank = 5;
+					
+					int nextbank = thisbank + 1;
+					if(nextbank==6) nextbank = 1;
+					
+					switch(nextbank){
+					
+					case 1:
+						sign.setLine(0, ChatColor.AQUA + "Bank -> Loan");
+						sign.setLine(1, ChatColor.AQUA+"~~~~~~~~~~~~");
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						sign.update(true);
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank changed to BankLoan.");
+						break;
+					case 2:
+						sign.setLine(0, ChatColor.GREEN + "Bank -> XP");
+						sign.setLine(1, ChatColor.GREEN+"~~~~~~~~~~~~");
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						sign.update(true);
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank changed to BankXP.");
+						break;
+					case 3:
+						sign.setLine(0, ChatColor.WHITE + "Bank -> Money");
+						sign.setLine(1, ChatColor.WHITE+"~~~~~~~~~~~~");
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						sign.update(true);
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank changed to BankMoney.");
+						break;
+					case 4:
+						sign.setLine(0, ChatColor.YELLOW + "Bank Esmerald");
+						sign.setLine(1, ChatColor.YELLOW+"~~~~~~~~~~~~");
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank changed to BankEsmerald.");
+						sign.update(true);
+						break;
+					case 5:
+						sign.setLine(0, ChatColor.WHITE + "Bank -> Time");
+						sign.setLine(1, ChatColor.WHITE+"~~~~~~~~~~~~");
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank changed to BankTime.");
+						sign.update(true);
+						break;
+						
+					}
+					event.setCancelled(true);
+					return;
+					
+				}else if (player.getItemInHand() != null && player.getItemInHand().getType().equals(Material.FLINT)){
+					if(sign.getLine(2).equals(ChatColor.WHITE+"Bank")&&sign.getLine(3).equals(ChatColor.WHITE+"Closed")){
+						sign.setLine(2, "" + plugin.langCF("signwelcome"));
+						sign.setLine(3, "");
+						sign.update();
+						event.setCancelled(true);
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"Bank Opened.");
+						return;
+					}else{
+						sign.setLine(2, ChatColor.WHITE+"Bank");
+						sign.setLine(3, ChatColor.WHITE+"Closed");
+						sign.update();
+						event.setCancelled(true);
+						player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"Bank Closed.");
+						return;
+					}
+				}
+				
+				return;
+				
+			}
 		
 		
+			event.setCancelled(true);
+			
+			//AllBanks 1.6.2 - Bank Closed
+				if(sign.getLine(2).equals(ChatColor.WHITE+"Bank")&&sign.getLine(3).equals(ChatColor.WHITE+"Closed")){
+					player.sendMessage(ChatColor.GOLD+"[AllBanks] "+ChatColor.GRAY+"This bank is closed.");
+					return;
+				}
+			
+			
 			if (player.hasPermission("ebank.admin") && player.isSneaking()) {
 				return;
 			}
-			event.setCancelled(true);
-		
+			
+			
 			BankPlayer bPlayer = null;
 			
 			//DETECTAMOS SI TIENE PERMISOS DE USAR
@@ -154,7 +336,7 @@ public class EventOnPlayerInteract {
     				String[] sign2 = sign1.getLines();
     				
     				if(sign2[0].equals(ChatColor.AQUA + "Bank -> Loan")||sign2[0].equals(ChatColor.WHITE + "Bank -> Money")||sign2[0].equals(ChatColor.GREEN + "Bank -> XP")||sign2[0].equals(ChatColor.YELLOW + "Bank Esmerald")||sign2[0].equals(ChatColor.WHITE + "Bank -> Time")){
-    					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("nopermusechest"));
+    					player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("nopermusechest"));
     					event.setCancelled(true);
     					return;
     				}
@@ -163,7 +345,7 @@ public class EventOnPlayerInteract {
     		
     		if(plugin.getConfig().getBoolean("Plugin.disable-all-banks")){
     			if(sign.getLine(0).equals(ChatColor.AQUA + "Bank -> Loan")||sign.getLine(0).equals(ChatColor.GREEN + "Bank -> XP")||sign.getLine(0).equals(ChatColor.YELLOW + "Bank Esmerald")||sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Money")){
-    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.RED+plugin.traducir("cant-use-all-banks-disabled")+ChatColor.AQUA+plugin.traducir("cant-use-all-banks-disabled2"));
+    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("cant-use-all-banks-disabled"));
     				return;
     			}
     		}
@@ -199,15 +381,15 @@ public class EventOnPlayerInteract {
 		if(sign.getLine(0).equals(ChatColor.AQUA + "Bank -> Loan")){
 			if (plugin.isOpenBank(sign)) {
 				if (plugin.bankPlayerForPlayer(player) != null) {
-		    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("signalreadyopen"));
+		    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("signalreadyopen"));
 					return;
 				}
 			
 				bPlayer = new BankPlayer(player, sign);
 
 				player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
-				player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.YELLOW + plugin.traducir("welcomechat1") + player.getName()+"!");
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.YELLOW + plugin.traducir("dispmoneychat1") + ": " + econ.format(econ.getBalance(player.getName())));
+				player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("welcomechat1") + player.getName()+"!");
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("dispmoneychat1") + ": " + econ.format(econ.getBalance(player.getName())));
 	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.YELLOW + "-----------------------");
 	    	
 	    		plugin.bankUsers.put(bPlayer, sign);
@@ -232,7 +414,7 @@ public class EventOnPlayerInteract {
 				plugin.switchBankStateBankLoan(bPlayer);
 				
 			} else {
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("atmisused"));
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("atmisused"));
 
 			}
 			
@@ -242,7 +424,7 @@ public class EventOnPlayerInteract {
 		if(sign.getLine(0).equals(ChatColor.GREEN + "Bank -> XP")){
 			if (plugin.isOpenBank(sign)) {
 				if (plugin.bankPlayerForPlayer(player) != null) {
-		    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("signalreadyopen"));
+		    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("signalreadyopen"));
 					return;
 				}
 			
@@ -255,6 +437,14 @@ public class EventOnPlayerInteract {
 				YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 
 				FPlayer.set("info.use-last-bank", 1);
+				
+				//convert last save in xp
+				int xpplayer_save = FPlayer.getInt("bankxp.xp-save");
+				int xpplayer_save2 = FPlayer.getInt("bankxp.xp-save-exp");
+				
+	        	FPlayer.set("bankxp.xp-save-exp",plugin.convertLevelToExp(xpplayer_save)+xpplayer_save2);
+	        	FPlayer.set("bankxp.xp-save",0);
+	        	
 				try {
 					FPlayer.save(fileplayer);
 				} catch (IOException e) {
@@ -271,7 +461,7 @@ public class EventOnPlayerInteract {
 				plugin.switchBankStateBankXP(bPlayer);
 				
 			} else {
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("atmisused"));
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("atmisused"));
 
 			}	
 		}
@@ -280,7 +470,7 @@ public class EventOnPlayerInteract {
 	if(sign.getLine(0).equals(ChatColor.YELLOW + "Bank Esmerald")){
 		if (plugin.isOpenBank(sign)) {
 			if (plugin.bankPlayerForPlayer(player) != null) {
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("signalreadyopen"));
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("signalreadyopen"));
 				return;
 			}
 		
@@ -309,7 +499,7 @@ public class EventOnPlayerInteract {
 			plugin.switchBankStateBankEsmerald(bPlayer);
 			
 		} else {
-    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("atmisused"));
+    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("atmisused"));
 
 		}	
 	}
@@ -318,7 +508,7 @@ public class EventOnPlayerInteract {
 	if(sign.getLine(0).equals(ChatColor.WHITE + "Bank -> Money")){
 		if (plugin.isOpenBank(sign)) {
 			if (plugin.bankPlayerForPlayer(player) != null) {
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("signalreadyopen"));
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("signalreadyopen"));
 				return;
 			}
 		
@@ -347,7 +537,7 @@ public class EventOnPlayerInteract {
 			plugin.switchBankStateBankMoney(bPlayer);
 			
 		} else {
-    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("atmisused"));
+    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("atmisused"));
 
 		}	
 	}
@@ -356,7 +546,7 @@ public class EventOnPlayerInteract {
 	if(sign.getLine(0).equals(ChatColor.WHITE+"Bank -> Time")){
 		if (plugin.isOpenBank(sign)) {
 			if (plugin.bankPlayerForPlayer(player) != null) {
-	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("signalreadyopen"));
+	    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("signalreadyopen"));
 				return;
 			}
 		
@@ -385,7 +575,7 @@ public class EventOnPlayerInteract {
 			plugin.switchBankStateBankTime(bPlayer);
 			
 		} else {
-    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + ChatColor.WHITE + plugin.traducir("atmisused"));
+    		player.sendMessage(ChatColor.BLUE + "[AllBanks] " + plugin.langCF("atmisused"));
 
 		}	
 	}

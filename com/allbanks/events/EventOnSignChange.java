@@ -8,7 +8,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import com.github.drako900.MainAllBank;
 
 public class EventOnSignChange {
-  
+	
 	MainAllBank plugin;
     public EventOnSignChange(MainAllBank MainAllBank) {
     	this.plugin = MainAllBank;
@@ -119,7 +119,7 @@ public class EventOnSignChange {
         if(can_create==false){
         	if(sign[0].equalsIgnoreCase("AllBanks")||sign[0].equalsIgnoreCase("All Banks")||sign[0].equalsIgnoreCase("[AllBanks]")){
         		event.getBlock().breakNaturally();
-        		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+plugin.traducir("signcantnew"));
+        		player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signcantnew"));
         		return;
         	}
         }
@@ -130,40 +130,40 @@ public class EventOnSignChange {
             if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("loan")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("loan")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("loan")) {
                          event.setLine(0, ChatColor.AQUA+"Bank -> Loan");
                          event.setLine(1, ChatColor.AQUA+"~~~~~~~~~~~~");
-                         event.setLine(2, ChatColor.YELLOW+plugin.traducir("signclickopen"));
+                         event.setLine(2, plugin.langCF("signclickopen"));
                          
-                         player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("signnewtrue"));
+                         player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
             }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("xp")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("xp")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("xp")){
                 event.setLine(0, ChatColor.GREEN+"Bank -> XP");
                 event.setLine(1, ChatColor.GREEN+"~~~~~~~~~~~~");
-                event.setLine(2, ChatColor.YELLOW+plugin.traducir("signclickopen"));
+                event.setLine(2, plugin.langCF("signclickopen"));
                 event.setLine(3, ChatColor.AQUA+"");
                 
-                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("signnewtrue"));
+                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
             }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("money")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("money")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("money")){
                 event.setLine(0, ChatColor.WHITE+"Bank -> Money");
                 event.setLine(1, ChatColor.WHITE+"~~~~~~~~~~~~");
-                event.setLine(2, ChatColor.YELLOW+plugin.traducir("signclickopen"));
+                event.setLine(2, plugin.langCF("signclickopen"));
                 event.setLine(3, ChatColor.AQUA+"");
                 
-                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("signnewtrue"));
+                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
             }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("esmerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")){
                 event.setLine(0, ChatColor.YELLOW+"Bank Esmerald");
                 event.setLine(1, ChatColor.YELLOW+"~~~~~~~~~~~~");
-                event.setLine(2, ChatColor.YELLOW+plugin.traducir("signclickopen"));
+                event.setLine(2, plugin.langCF("signclickopen"));
                 event.setLine(3, ChatColor.AQUA+"");
                 
-                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("signnewtrue"));
+                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
             }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("time")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("time")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("time")){
                 event.setLine(0, ChatColor.WHITE+"Bank -> Time");
                 event.setLine(1, ChatColor.WHITE+"~~~~~~~~~~~~");
-                event.setLine(2, ChatColor.GREEN+plugin.traducir("signclickopen"));
+                event.setLine(2, plugin.langCF("signclickopen"));
                 event.setLine(3, ChatColor.AQUA+"");
                 
-                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+ChatColor.YELLOW+plugin.traducir("signnewtrue"));
+                player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
             }else if(sign[0].equalsIgnoreCase("AllBanks")||sign[0].equalsIgnoreCase("All Banks")||sign[0].equalsIgnoreCase("AllBanks")){
             	if(event.getBlock().getType()==Material.WALL_SIGN){
-            		player.sendMessage(ChatColor.RED+plugin.traducir("newbank-error-bank-not-found"));
+            		player.sendMessage(plugin.langCF("newbank-error-bank-not-found"));
             	}else{
             		//LLAANNGG
             		player.sendMessage(ChatColor.BLUE+"[AllBanks]"+ChatColor.RED+" Error! You can not place a SIGN POST, please place a Wall SIGN");

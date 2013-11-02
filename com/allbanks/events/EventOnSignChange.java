@@ -57,7 +57,7 @@ public class EventOnSignChange {
         	}
         }
         
-        if(sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")||sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("esmerald")||sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")){
+        if(sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("emerald")||sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("emerald")||sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("emerald")){
         	if(player.hasPermission("a.bankesmerald.sign.create")){
         		can_create = true;
     			if(!plugin.getConfig().getBoolean("BankEsmerald.enable-bank")){
@@ -65,6 +65,10 @@ public class EventOnSignChange {
     				bank_id = 3;
     			}
         	}
+        }
+        
+        if(sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")||sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("esmerald")||sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")){
+        	player.sendMessage(ChatColor.RED+"Error, The bank name is "+ChatColor.WHITE+"Emerald"+ChatColor.RED+" not "+ChatColor.ITALIC+"Esmerald...");
         }
         
         if(sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("money")||sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("money")||sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("money")){
@@ -147,7 +151,7 @@ public class EventOnSignChange {
                 event.setLine(3, ChatColor.AQUA+"");
                 
                 player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("signnewtrue"));
-            }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("esmerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("esmerald")){
+            }else if(event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("emerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("All Banks")&&sign[1].equalsIgnoreCase("emerald")||event.getBlock().getType()==Material.WALL_SIGN && sign[0].equalsIgnoreCase("AllBanks")&&sign[1].equalsIgnoreCase("emerald")){
                 event.setLine(0, ChatColor.YELLOW+"Bank Esmerald");
                 event.setLine(1, ChatColor.YELLOW+"~~~~~~~~~~~~");
                 event.setLine(2, plugin.langCF("signclickopen"));

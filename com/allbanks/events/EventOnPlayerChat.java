@@ -15,6 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.avaje.ebean.text.TextException;
 import com.github.drako900.BankPlayer;
 import com.github.drako900.MainAllBank;
 import com.github.drako900.UpdateSignStateAllBanks;
@@ -55,6 +56,7 @@ public class EventOnPlayerChat {
        FileConfiguration pInv = YamlConfiguration.loadConfiguration(playerdata);
        int loanactual = pInv.getInt("user.loan");
        int cantidad = 0;
+       int cantidad2 = 0;
        
        //OBTENEMOS EL BANCO QUE SE ESTA USANDO ACTUALMENTE
        int bankactual = SPlayer.getInt("info.use-last-bank");
@@ -108,7 +110,7 @@ public class EventOnPlayerChat {
 						for (int i=0; i<items.length; i++) {
 							if(items[i]!=null){
 								
-								if(items[i].getTypeId()==388){
+								if(items[i].getType().equals(Material.EMERALD)){
 									//ES ESMERALDA LO QUE HAY EN EL INVENTARIO
 									esmeraldastot = (esmeraldastot + items[i].getAmount());
 								}else{
@@ -288,8 +290,7 @@ public class EventOnPlayerChat {
 					if((xpplayer_save3+plugin.convertLevelToExp(cantidad)) >= plugin.convertLevelToExp(max_xp_save_config)){
 						if(max_xp_save_config == 0){}else{
 							player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-xp-max-save-reached").replace("%level%", max_xp_save_config+""));
-							player.sendMessage("MAX:"+plugin.convertLevelToExp(max_xp_save_config));
-							player.sendMessage("CALC: "+(xpplayer_save3+plugin.convertLevelToExp(cantidad)));
+
 							return;
 						}
 					}
@@ -343,7 +344,7 @@ public class EventOnPlayerChat {
 						if(levelss==0){
 							
 						}else{
-							levelss = levelss + 1;
+							levelss = levelss + 0;
 						}
 						
 						if((plugin.getLevelForExp(xpplayer_save2)+1)<cantidad){
@@ -422,8 +423,8 @@ public class EventOnPlayerChat {
 			    			
 			    			int current_xp_save = FPlayer.getInt("bankxp.xp-save-exp");
 			    			
-			    			if((plugin.getLevelForExp(current_xp_save)+1) < cantidad){
-			    				player.sendMessage(plugin.langCF("bank-xp-transfer-msg3-error").replace("%level%", (plugin.getLevelForExp(current_xp_save)+1)+""));
+			    			if((plugin.getLevelForExp(current_xp_save)+0) < cantidad){
+			    				player.sendMessage(plugin.langCF("bank-xp-transfer-msg3-error").replace("%level%", (plugin.getLevelForExp(current_xp_save)+0)+""));
 			    				return;
 			    			}
 							
@@ -500,32 +501,39 @@ public class EventOnPlayerChat {
 			switch (bPlayer.getState()){
 				case 1:
 					try{
-			        	cantidad = Integer.parseInt(mensaje);
+						
+						try{
+							cantidad2 = Integer.parseInt(mensaje);
+						}catch (NumberFormatException e){
+							player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
+							event.setCancelled(true);
+							return;
+						}
 			        	
 			        	//CALCULAMOS TODOO PARA VER SI ES CORRECTO
-			        	if(econ.has(player.getName(), cantidad)){
+			        	if(econ.has(player.getName(), cantidad2)){
 			    			File fileplayer = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+player.getName()+".yml");
 			    			YamlConfiguration FPlayer = YamlConfiguration.loadConfiguration(fileplayer);
 			    			
 			    			int moneyact = FPlayer.getInt("bankmoney.save-money");
 			    			
 			    			//1.6 check max-money save
-			    			int money_save_total = cantidad+moneyact;
+			    			int money_save_total = moneyact + cantidad2;
 			    			int money_max_save_config = plugin.getConfig().getInt("BankMoney.max-money-save");
 			    			
-			    			if(money_save_total > money_max_save_config){
+			    			if(money_save_total>money_max_save_config){
 			    				//MAXIMO DE DINERO A GUARDAR ALCANZADO
 			    				if(money_max_save_config==0){}else{
-			    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-money-max-save-reached").replace("%ammount%", econ.format(money_max_save_config)));
+			    				player.sendMessage(ChatColor.BLUE+"[AllBanks] "+plugin.langCF("bank-money-max-save-reached").replace("%ammount%", money_max_save_config+""));
 			    				return;
 			    				}
 			    			}
 			    			
-			    			FPlayer.set("bankmoney.save-money",cantidad+moneyact);
+			    			FPlayer.set("bankmoney.save-money",money_save_total);
 			    			
 			    			try {
 								FPlayer.save(fileplayer);
-								econ.withdrawPlayer(player.getName(), cantidad);
+								econ.withdrawPlayer(player.getName(), cantidad2);
 								player.sendMessage(plugin.langCF("bankmoney-save-succesfull-1").replace("%ammount%", econ.format(cantidad)));
 								
 								plugin.updatesignstate.updateSignStateBankMoney(bPlayer.getSign(), 1, player);
@@ -538,8 +546,8 @@ public class EventOnPlayerChat {
 			        	}else{
 			        		player.sendMessage(plugin.langCF("bankmoney-error-no-money"));
 			        	}
-			        } catch (NumberFormatException e) {
-			        	cantidad = 0;
+			        } catch (TextException e) {
+			        	cantidad2 = 0;
 			        	event.setCancelled(true);
 			        	player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
 			        	return;
@@ -605,7 +613,13 @@ public class EventOnPlayerChat {
 						
 						case 2:
 							try{
-					        	cantidad = Integer.parseInt(mensaje);
+								try{
+									cantidad = Integer.parseInt(mensaje);
+								}catch (NumberFormatException e){
+									player.sendMessage(plugin.langCF("noisanumber").replace("%value%", mensaje));
+									event.setCancelled(true);
+									return;
+								}
 					        	
 					        	//God! Is correctly... match amount and differences...
 				    			File player_d_t_f = new File(plugin.getDataFolder()+File.separator+"pdata"+File.separator+bPlayer.getPlayerTargetT()+".yml");
